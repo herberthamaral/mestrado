@@ -15,4 +15,8 @@ unzip block_7.zip
 unzip block_8.zip
 unzip block_9.zip
 rm *.zip
-find . -name "*.csv" | xargs sed -i s/\?/-1/
+cd ..
+find . -name "*.csv" | xargs sed -i s/\?/-1/g
+find . -name "*.csv" | xargs sed -i s/TRUE/1/g
+find . -name "*.csv" | xargs sed -i s/FALSE/-1/g
+find . -name "*.csv" | xargs sed -i s/\"//g
