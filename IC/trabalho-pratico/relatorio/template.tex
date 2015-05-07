@@ -1,0 +1,201 @@
+\documentclass[11pt]{article}
+\usepackage{epsfig,psfrag}
+\usepackage{amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Inteligência Computacional $\bullet$ 2015}} 
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Título}} % Article title
+
+\author{
+\large
+\textsc{Nome}\\[2mm] % Your name
+\normalsize Departamento de Ciências da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:nome1@sec.com}{nome1@sec.com} % Your email address
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+\selectlanguage{brazil}
+\begin{abstract}
+\noindent  Escreva um resumo de máximo 100 palavras.
+
+\end{abstract}
+
+\section{Introdução}
+
+\section{Desenvolvimento}
+
+\section{Resultados}
+
+\section{Considerações}
+
+\section*{Referências}
+
+Exemplos de como citar e como inserir referências
+
+\begin{enumerate}
+
+\item article: \cite{best,pier,jame}
+
+\item proceedings: \cite{Weiss94}
+
+\item inproceedings: \cite{conftypical,Moss94}
+
+\item book: \cite{ArmsRace1}
+
+\item edition: \cite{ComplexVariables}
+
+\item editor: \cite{ColBenh:93}
+
+\item series: \cite{inbook}
+
+\item tech report: \cite{hobby1992,CSTR116}
+
+\item unpublished: \cite{VoQS}
+
+\item phd thesis: \cite{Brown:1988:IEL}
+
+\item masters thesis: \cite{segms}
+
+\item incollection: \cite{Jones:Phoneme}
+
+\item booklet: \cite{URW:kerning}
+
+\item misc: \cite{netpbm}
+
+\begin{thebibliography}{10}
+
+\bibitem{best}
+B.~W. Bestbury, {$R$}-matrices and the magic square, {\em J. Phys. A} {\bf
+  36}(7)  (2003)  1947--1959.
+
+\bibitem{pier}
+P.~X. Deligne and B.~H. Gross, On the exceptional series, and its descendants,
+  {\em C. R. Math. Acad. Sci. Paris} {\bf 335}(11)  (2002)  877--881.
+
+\bibitem{jame}
+J.~M. Landsberg and L.~Manivel, Triality, exceptional {L}ie algebras and
+  {D}eligne dimension formulas, {\em Adv. Math.} {\bf 171}(1)  (2002)  59--85.
+
+\bibitem{Weiss94}
+G.~H. Weiss (ed.), {\em Contemporary {P}roblems in {S}tatistical {P}hysics}
+  (SIAM, Philadelphia, 1994).
+
+\bibitem{conftypical}
+R.~K. Gupta and S.~D. Senturia, Pull-in time dynamics as a measure of absolute
+  pressure, in {\em Proc. {IEEE} Int. Workshop on Microelectromechanical
+  Systems $(${MEMS}'97$)$\/} (Nagoya, Japan, 1997), pp. 290--294.
+
+\bibitem{Moss94}
+F.~Moss, Stochastic resonance: From the ice ages to the monkey's ear, in {\em
+  Contemporary {P}roblems in {S}tatistical {P}hysics\/}, ed. G.~H. Weiss (SIAM,
+  Philadelphia, 1994), pp. 205--253.
+
+\bibitem{ArmsRace1}
+L.~F. Richardson, {\em Arms and {I}nsecurity} (Boxwood, Pittsburg, 1960).
+
+\bibitem{ComplexVariables}
+R.~V. Churchill and J.~W. Brown, {\em Complex {V}ariables and {A}pplications},
+  5th edn. (McGraw-Hill, 1990).
+
+\bibitem{ColBenh:93}
+F.~Benhamou and A.~Colmerauer (eds.), {\em Constraint {L}ogic {P}rogramming,
+  {S}elected {R}esearch} (MIT Press, 1993).
+
+\bibitem{inbook}
+D.~W. Baker and N.~L. Carter, {\em Seismic {V}elocity {A}nisotropy {C}alculated
+  for {U}ltramafic {M}inerals and {A}ggregates}, in {\em Flow and {F}racture of
+  {R}ocks\/}, eds. H.~C. Heard, I.~V. Borg, N.~L. Carter and C.~B. Raleigh,
+  Geophys. Mono., Vol.~16.
+\newblock (Am. Geophys. Union, 1972), pp. 157--166.
+
+\bibitem{hobby1992}
+J.~D. Hobby, {A User's Manual for MetaPost}, Tech. Rep. 162, AT\&T Bell
+  Laboratories (Murray Hill, New Jersey, 1992).
+
+\bibitem{CSTR116}
+B.~W. Kernighan, {PIC}---{A} graphics language for typesetting, Computing
+  Science\break Technical Report 116, AT\&T Bell Laboratories (Murray Hill, New
+  Jersey, 1984).
+
+\bibitem{VoQS}
+M.~J. Ball, J.~Esling and C.~Dickson, {VoQS: Voice Quality Symbols}, Revised to
+  1994,  (1994).
+
+\bibitem{Brown:1988:IEL}
+M.~E. Brown, {\em An Interactive Environment for Literate Programming}, PhD
+  thesis, Texas A\&M University, (TX, USA, 1988), pp. ix + 102.
+
+\bibitem{segms}
+G.~S. Lodha, Quantitative interpretation of ariborne electromagnetic response
+  for a spherical model, Master's thesis, University of Toronto  (1974).
+
+\bibitem{Jones:Phoneme}
+D.~Jones, {The term ``phoneme''}, in {\em Phonetics in Linguistics: A Book of
+  Reading\/}, eds. W.~E. Jones and J.~Laver (Longman, London, 1973) pp.
+  187--204.
+
+\bibitem{URW:kerning}
+B.~Murrey, Kerning on the fly, URW Non-Plus-Ultra Typography series (Pittsburg,
+  1991).
+
+\bibitem{netpbm}
+B.~Davidsen, Netpbm  (1993),
+  \url{ftp://ftp.wustl.edu/graphics/graphics/packages/NetPBM}.
+
+\end{thebibliography}
+
+\end{enumerate}
+
+\end{document}
