@@ -101,6 +101,7 @@ Evaluation des Krebsregisters NRW Schwerpunkt Record Linkage. Technical Report,
 IMBEI 2009. Disponível em
 https://archive.ics.uci.edu/ml/datasets/Record+Linkage+Comparison+Patterns,
 acessado em 14/05/2015
+
 [2] - Ahmed K. Elmagarmid, Panagiotis G. Ipeirotis, Vassilios S. Verykios;
 Duplicate Record Detection: A Survey. IEEE TRANSACTIONS ON KNOWLEDGE AND DATA
 ENGINEERING, VOL. 19, NO. 1, Janeiro de 2007.
