@@ -36,9 +36,9 @@ removidos, todas as letras seriam colocadas em minúsculo e contrações, como
 A fase de comparação de campos tem o objetivo de medir o nível de semelhança
 entre os campos de dois registros previamente preparados. Essa métrica é obtida
 através de comparação feita com algoritmos específicos que levam em conta a
-distância de edição (distância Levenshtein, distância Jaro-Winkler [4],
-Smith-Waterman [5], dentre outras), de token (strings atômicas [6], WHIRL [7]) e
-semelhança fonética (soundex [8], NYSSIIS [9], ONCA [10], Metaphone [11]).
+distância de edição (distância Levenshtein, distância Jaro-Winkler,
+Smith-Waterman, dentre outras), de token (strings atômicas, WHIRL) e
+semelhança fonética (soundex, NYSSIIS, ONCA, Metaphone).
 
 Finalmente, há a fase de detecção de registros duplicados. Nesta fase, os dados
 provenientes da etapa anterior são analisados e classificados entre
@@ -84,6 +84,10 @@ is_match é usado como saída esperada.
 Para este trabalho, uma rede neural de duas camadas, contendo 16 neurônios na
 camada intermediária foi usada. O toolbox de redes neurais do MatLab foi
 utilizado.
+
+O código-fonte utilizado para a realização deste trabalho pode ser encontrado
+em https://github.com/herberthamaral/mestrado/tree/master/IC/trabalho-pratico
+(acesso em 14/05/2015).
 
 Resultados
 ----------
