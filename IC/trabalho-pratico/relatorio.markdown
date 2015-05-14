@@ -96,6 +96,9 @@ Os testes demonstraram um excelente resultado, em que apenas 108 registros num
 5174210 foram classificados incorretamente, deixando a taxa de acerto da rede
 em 99.9979%.
 
+Referências
+-----------
+
 [1] - Irene Schmidtmann, Gael Hammer, Murat Sariyar, Aslihan Gerhold-Ay;
 Evaluation des Krebsregisters NRW Schwerpunkt Record Linkage. Technical Report,
 IMBEI 2009. Disponível em
