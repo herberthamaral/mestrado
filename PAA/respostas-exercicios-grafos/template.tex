@@ -1,0 +1,126 @@
+\documentclass[11pt]{article}
+\usepackage{epsfig,psfrag}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[utf8]{inputenc}
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\selectlanguage{brazil}
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Projeto e Análise de Algoritmos $\bullet$ 2015}} 
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Lista de Exercícios - Grafos}} % Article title
+
+\author{
+\large
+\textsc{Herberth Amaral}\\[2mm] % Your name
+\normalsize Departamento de Ciência da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{herberthamaral@gmail.com} % Your email address
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+%\begin{abstract}
+%\noindent O presente trabalho analisa o uso de redes neurais artificiais do
+%tipo perceptron de múltiplas camadas para fazer classificação de dados de
+%comparação de registros, a fim de categorizá-los como registros correspondentes
+%ou não-correspondentes, em um processo conhecido como record linkage.  A base
+%de dados contém os resultados de comparação de dados demográficos provenientes
+%do registro epidemiológico de câncer do estado alemão de Rhine-Westphalia \cite{west}.
+%Os resultados mostram que a rede neural usada neste trabalho conseguiu
+%classificar os registros satisfatoriamente.
+%
+% 
+%\end{abstract}
+
+\newpage
+
+\section{Exercícios}
+
+\begin{enumerate}
+    \item  \hfill \\
+        \begin{enumerate}
+            \item[a] - $in(S) = \{v \in S | \forall vE\textsuperscript{*} u, u \in V \}$
+            \item[b] - $out(S) = \{v \in S | \forall uE\textsuperscript{*} v, u \in V \}$
+        \end{enumerate}
+    \item $G\textsuperscript{-1} = (V, \{(u,v) | (v,u) \in E\})$
+    \item $SCC(u) = \{v \in | uE\textsuperscript{*}v \land vE\textsuperscript{*}u\}$
+    \item Sim, é possível. De fato, o DFS funciona de forma similar.
+    \item $(V, E_{DAG}) = (V, \{r(u),r(v)|uEv\})$
+    \item O texto faz referência à propriedades de dígrafos acíclicos e considera que $\forall v \in V, \exists (v,v)$, mesmo os vértices não tendo \textit{loops}. O texto também estabelece uma relação entre vértices em que é possível aplicar uma ordem total para obter a ordenação topológica.
+    \item $P(r(u),r(v))$ é o conjunto de vértices intermediários entre $u$ e $v$
+    \item \hfill \\
+        \begin{algorithmic}
+            \Function{InsereNovoVertice}{Grafo, NovaAresta}
+                \State $(V,E)\gets Grafo$
+                \State $SCSS\gets Tarjan(Grafo)$
+                \State $(u,v) \gets NovaAresta$
+                \State $AdicionaNovaArestaEmE(NovaAresta)$
+                \ForAll{$c1 \in SCCS$}
+                    \ForAll{$c2 \in SCCS$}
+                        \If {$(u \in c1 \land v \in c2) \lor (v \in c1 \land u \in c2)$}
+                            \State $SCSS\gets Tarjan(Grafo)$
+                            \State $break$
+                        \EndIf
+                    \EndFor
+                \EndFor
+            \EndFunction
+        \end{algorithmic}
+    \item \hfill \\
+        \Function{TransformaGemDAG}{Grafo}
+            \Comment{O enunciado desta questão está meio estranho. Voltar nela depois}
+        \EndFunction
+    \item
+\end{enumerate}
+
+
+\end{document}
