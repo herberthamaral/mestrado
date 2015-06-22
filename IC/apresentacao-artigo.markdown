@@ -143,6 +143,26 @@ informação, nomeadamente o VSM (Vector Space Model).
 Alternativa ao TF-IDF
 ---------------------
 
-O TF-IDF funciona bem, mas não leva em consideração dois fatores:
+O TF-IDF funciona bem, mas possui a desvantage de não considerar o grau de
+identificação do objeto se somente o termo do índice considerado é usado e a
+existência de palavras chaves compostas.
 
-- 
+Por causa disso, os autores propuseram um sistema que leva em consideração não
+apenas os cálculos TF e IDF, mas algumas outras variáveis importantes na
+definição do peso da palavra-chave. No total, quatro pontos são levados em conta:
+
+- Quão comum é uma palavra-chave aparecer em outros documentos? (IDF);
+- Quão comum é uma palavra-chave aparecer no seu próprio documento? (TF);
+- Uma palavra-chave indubitavelmente define um objeto por si só?;
+- Uma palavra-chave está ligada com outra?
+
+As respostas destas perguntas alimentam um sistema de inferência fuzzy chamado
+Weight Assigner em que a saída deste sistema define o peso da palavra chave
+correspondente para aquele documento.
+
+Resultados
+----------
+
+
+Conclusão
+---------
