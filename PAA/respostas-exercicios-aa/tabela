@@ -1,0 +1,15 @@
+\begin{tabular}{|c|c|c|}
+\hline
+Express\~ao & Termo(s) dominantes & O(...) \\ \hline
+$5 + 0.001n^3 + 0.025n$ & $0.001n^3$ & $O(n^3)$
+$500n + 100n^1.5 + 50n log10 n$ & $n^1.5$ & $O(n^1.5)$
+$0.3n + 5n^1.5 + 2.5n^1.75$ & $n^1.75$ & $O(n^1.75)$
+$n^2 log_2 n + n(log2 n)^2$ & $n^2 log_2 n$ & $(O^2 log n)$
+$n log_3 n + n log2 n$ & $n log_3n$ & $O(nlogn)$ 
+$3 log_8 n + log2 log2 log2 n$ &
+$100n + 0.01n^2$ &
+$0.01n + 100n^2$ &
+$2n + n^0.5 + 0.5n^1.25 $ &
+$0.01n log2 n + n(log2 n)^2$ &
+$100nlog3n + n^3 + 100n$ &
+$0.003 log4 n + log2 log2 n$ &

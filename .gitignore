@@ -1,2 +1,8 @@
 ~$
 IC/trabalho-pratico/dataset/*
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.swp
