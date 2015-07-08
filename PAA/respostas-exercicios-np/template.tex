@@ -175,6 +175,47 @@
         Desta forma, como um problema NP-completo reduzido a um tempo
         polinomial também será NP-Completo (pois caso contrário prova-se que
         P=NP), então o problema de decisão do caixeiro viajante é NP-Completo.
+    \item Para provar que um problema é NP-completo, é necessário mostrar que é
+        NP e que é NP-hard. \textbf{Prova que é NP:} Podemos simplesmente
+        adivinhar se a saída será sim ou não e verificar em tempo polinominal.
+        \textbf{Prova que é NP-Hard:} para esta prova precisamos reduzir o
+        problema INDEPENDENT SET a um problema NP-Hard (no caso, o K-Clique).
+        Para tal, é necessário fazer a conversão das entradas. O INDEPENDENT
+        SET retorna "sim" se \textit{existe um subconjunto de vértices
+        \textbf{S} de um grafo \textbf{G} de tamanho $k$ ou maior de forma que
+    não há nenhuma aresta que conecta dois vértices em \textbf{S}} e retorna
+    "não" caso contrário. Portanto, é necessário encontrar o complemento das
+    arestas de forma que os vértices que não tem nenhuma ligação passem a ser
+    um clique. Após esse procedimento, podemos executar o algoritmo $K-Clique$
+    para verificar identificar um clique de tamanho $\geq n$. Caso haja um
+    clique com tal característica, o INDEPENDENT SET pode retornar "sim". Caso
+    contrário retorna "não".
+    \item 14
+    \item Dado o conjunto C de todas as sequencias binárias existentes. Sempre
+        existirá uma sequencia feita pela diagonalização de todas as sequencias
+        que será diferente de todas as outras e, desta forma, não será contada.
+        Portanto, a sequencia de todos os numeros binarios é incontável.
+    \item \textbf{Prova por indução:} Considere a seguinte lista de números racionais: \\
+        $\displaystyle \frac 0 1, \frac 1 1, \frac {-1} 1, \frac 1 2, \frac {-1} 2, \frac 2 1, \frac {-2} 1, \frac 1 3, \frac 2 3, \frac {-1} 3, \frac {-2} 3, \frac 3 1, \frac 3 2, \frac {-3} 1, \frac {-3} 2, \frac 1 4, \frac 3 4, \frac {-1} 4, \frac {-3} 4, \frac 4 1, \frac 4 3, \frac {-4} 1, \frac {-4} 3 \ldots$ \\
+        É claro que todos os números racionais irão aparecer nesta lista. Desta
+        forma é possível enumerar cada um dos elementos da lista acima.
+    \item \textbf{Prova por absurdo}. Sabendo que o problema da parada é
+        insolúvel, podemos provar que tal programa é insolúvel através de uma
+        redução do problema da impressão para o problema da parada. Dado uma
+        função $ImprimeAlgumaCoisa(programa, entrada)$, que retorna "sim" ou
+        "não" podemos definir o problema da parada da seguinte forma:
+        $ProgramaPara(programa, entrada) ->
+        ImprimeAlgumaCoisa(RemovePrints(programa) + "print 'alguma coisa'", entrada))$.
+        Como sabemos que o problema da parada é indecidível e que conseguimos
+        reduzi-lo ao programa de $ImprimeAlgumaCoisa$, então é absurdo afirmar
+        que $ImprimeAlgumaCoisa$ é indecidível.
+    \item Mesmo caso do item anterior: dado uma instrução $x$, vamos assumir
+        que exista um programa $ExecutaX(programa, entrada)$ que responde sim
+        ou não. Podemos reduzir esse problema ao problema da parada que sabemos
+        que é insolúvel. E podemos fazer isso desta forma:
+        $ProgramaPara(programa, entrada) -> ExecutaX(RemoveInstrucoesX(programa)+x, entrada)$.
+        Desta forma, se o ExecutaX retornar "sim" ou "não", então o problema da
+        parada estará resolvido, o que é absurdo.
 \end{enumerate}
 
 %\begin{thebibliography}{1}
