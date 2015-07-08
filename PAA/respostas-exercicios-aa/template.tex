@@ -147,7 +147,7 @@ $n = 3 \rightarrow \Sigma_{i=0}^3 3^i = 3.3.3 = (3+3+3+3+3+3+3+3+3) = \Sigma_{j=
 $n = x \rightarrow \Sigma_{i=0}^x 3^i = (3.3.\dotsm)= (3+3+3+\dotsm) = \Sigma_{j=0}^{3^{x-1}} 3$.
 Como $3^{x-1})$ é dominado assintoticamente por $3^x$, podemos concluir que $\Sigma_{i=0}^n 3^i$ é $O(3^n)$.
     \item 16
-    \item O limite inferior para ordenação por comparação é $O(n logn)$.
+    \item O limite inferior para ordenação por comparação é $\Omega(n logn)$.
     \item  Segue tabela preenchida abaixo \\
         \begin{tabular}{|c|c|c|}
         Express\~ao & Termo(s) dominantes & O(...) \\ \hline
@@ -222,6 +222,14 @@ representação em pseudocódigo do algoritmo:
                 \item Falso. Contra-exemplo: $\Theta(n) + \Theta(n^2) = \Theta(n^2)$;
                 \item Verdadeiro. $g(n)$ domina assintoticamente $f(n)$, então $2^{g(n)}$ também domina $2^{f(n)}$;
                 \item Falso. Considere $f(n) = n$ e $g(n) = n^2$. Não se pode afirmar que $g(n) = \Omega(n)$, pois $g(n)$ pode ser $\Omega(n^2)$.
+            \end{enumerate}
+        \item Considerando a forma $T(n) = aT(n/b) + f(n)$, temos:
+            \begin{enumerate}
+                \item Como $f(n) = O(n^c), c < log_ba$, então a relação
+                    enquadra-se no primeiro caso. Portanto, $T(n) = \Theta(n^{log_ba}) = \Theta(n^2)$;
+                \item Como $f(n) = \Theta(n^c), c = log_ba$, então a relação enquadra-se no segundo caso. Portanto 
+                    $T(n) = \Theta(n^{c}log^{k+1}(n)) = \Theta(n^{2}log^{0+1}(n)) = \Theta(n^2logn)$;
+                \item Como $f(n) = \Omega(n^c), c > log_ba, af(n/b) < kf(n), \forall k<1$ temos que $T(n) = \Theta(f(n))$. Portanto $T(n) = \Omega(n^3)$.
             \end{enumerate}
 \end{enumerate}
 
