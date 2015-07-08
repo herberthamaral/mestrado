@@ -38,7 +38,7 @@
 \fancyfoot{} % Blank out the default footer
 \fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
 \centerline{\epsffile{unimontes.eps}}
-\end{minipage}}}{\hspace{.6cm} Projeto e Análise de Algoritmos $\bullet$ 2015}} 
+\end{minipage}}}{\hspace{.6cm} Projeto e Análise de Algoritmos $\bullet$ 2015}}
 } % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
@@ -82,7 +82,7 @@
 %Os resultados mostram que a rede neural usada neste trabalho conseguiu
 %classificar os registros satisfatoriamente.
 %
-% 
+%
 %\end{abstract}
 
 \newpage
@@ -90,16 +90,96 @@
 \section*{Exercícios}
 
 \begin{enumerate}
-    \item Falso. Não se sabe se problemas da classe NP-Completo podem ser
-        reduzidos em algoritmos de tempo polinomial, portanto afirmar que a
-        resolução de problemas da classe NP-Completo podem ser resolvidos em
-        tempo exponencial é incompleto.
-        ver ref: http://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/recorrencias.html
+    \item Problemas da classe NP-Completo estão dentro de NP, que podem ser
+        resolvidos em tempo exponencial, portanto a afirmativa é verdadeira. No
+        entanto, vale observar que não se sabe se os problemas NP podem ser
+        resolvidos \textit{somente} em tempo exponencial.
+    \item
+        \begin{enumerate}
+            \item P = problemas computáveis em tempo polinomial por uma máquina de Turing;
+            \item NP = problemas computáveis em tempo polinomial por uma máquina não-determinística ("oráculo");
+            \item NP-Completo = problemas dentro da classe NP e da classe NP-hard.
+        \end{enumerate}
+    \item
+        \begin{enumerate}
+            \item Problemas de decisão são aqueles que precisam de respostas
+                "sim" ou "não". Exemplo: há uma rota de Montes Claros e BH que
+                não passe por Bocaíuva? Os problemas de otimização são aqueles
+                que visam em encontrar uma solução de menor custo. Exemplo:
+                qual é a melhor rota daqui para São Paulo?
+            \item Um problema NP-Completo é um problema que é ao mesmo tempo NP
+                e NP-difícil. Portanto as duas pessoas estão corretas, mas a
+                pessoa que disse que é NP-Completo possui uma resposta mais
+                específica.
+            \item NSPACE é uma categoria de problemas que tem complexidade de
+                espaço (memória) polinomial em uma máquina não-determinística.
+                Problemas de planejamento são NPSPACE.
+            \item Um problema é dito estar na classe CO-NP se o seu complemento
+                está em NP. Note que é possível problemas cujos complementos
+                sejam eles mesmos e por isso eles podem estar em CO-NP e em NP
+                ao mesmo tempo. Um exemplo de problema CO-NP é o problema da
+                fatoração de inteiros.
+            \item O problema das Torres de Hanoi possui complexidade
+                $\Omega(2^n)$. Desta forma é impossível achar um algoritmo em
+                tempo polinomial para resolver o problema das torres de Hanoi.
+                Não se sabe se os problemas da classe NP-Completo podem ser
+                reduzidos para tempo polinomial, portanto o problema das torres
+                de Hanoi não se encaixa em NP-Completo.
+        \end{enumerate}
+    \item
+        \begin{enumerate}
+            \item Dado o conjunto F de todas as funções existentes. Existem
+                funções criadas a partir de combinações de $n$ outras funções
+                ($n > 1$). Desta forma há funções incontáveis que não se sabe
+                determinar sua saída a partir de sua entrada.
+            \item O problema da parada é um problema indecidível porque não é
+                possível criar um programa que decida que outro programa pare
+                para uma determinada entrada.
+        \end{enumerate}
+    \item Tanto faz. A redução de um programa NP-completo em tempo polinomial a
+        outro sempre será NP-completo.
+    \item Talvez.
+    \item Mesma coisa da questão 5: se um problema é NP-completo e é redutível
+        a outro problma $B$ em tempo polinomial, então $B \in NP-completo$.
+    \item
+        \begin{enumerate}
+            \item Pode-se usar um algoritmo de ordenação por contagem e reduzir
+                o pareamento a ele da mesma forma que é demonstrado no livro na
+                seção 17.1
+            \item Não. O problema do pareamento é redutível ao problema de
+                ordenação, porém o inverso não é verdadeiro. Por mais que
+                achemos soluções menos complexas que $\Omega(nlogn)$ para
+                pareamento, não significa que podemos aplicar essas soluções
+                para ordenação por comparação.
+        \end{enumerate}
+    \item \textbf{Prova que 3-coloração é NP-Completo:} Dado que 3-SAT é
+        NP-Completo, podemos reduzi-lo à 3-Coloração de um grafo $G$ através de
+        um processo polinomial que toma um conjunto de subgrafos de $G$ com 3
+        vértices e o submete ao teste de satisfabilidade do 3-SAT. Desta forma
+        é possível reduzir o problema de 3-Coloração à 3-SAT. No entanto, uma
+        redução de um problema NP-Completo em tempo polinomial só pode ser
+        NP-Completo. Portanto 3-coloração é NP-Completo. \textbf{Prova que
+        k-coloração é NP-Completo}: É possível provar por indução matemática
+        que k-coloração é NP completo se assumirmos que podemos reduzir
+        k-coloração à k-SAT para $k>2$, que é conhecidamente NP-Completo.
+    \item Pelo teorema mostrado no exemplo 17.3 do livro, o algoritmo K-Clique
+        é NP-completo. Se for possível provar que o K-Clique executa em tempo
+        polinomial, então poderemos ter reduções de problemas NP-Completo ao
+        K-Clique em tempo polinomial de forma que fique provado que P=NP.
+    \item 11
+    \item O problema de decisão do caixeiro viajante pode ser reduzido ao
+        problema de encontrar a melhor rota para o caixeiro viajante em tempo
+        polinomial. Basta pedirmos a melhor rota para o problema de otimização
+        do caixeiro viajante, se ela existir então o problema de decisão
+        retorna "Sim", caso contrário o problema de decisão retorna "não".
+        Desta forma, como um problema NP-completo reduzido a um tempo
+        polinomial também será NP-Completo (pois caso contrário prova-se que
+        P=NP), então o problema de decisão do caixeiro viajante é NP-Completo.
 \end{enumerate}
 
-\begin{thebibliography}{1}
-    \bibitem{thorup}
-    M. Thorup, Undirected single-source shortest paths with positive integer
-weights in linear time {\em JACM} {\bf 46} (1999).  \end{thebibliography}
+%\begin{thebibliography}{1}
+%    \bibitem{thorup}
+%    M. Thorup, Undirected single-source shortest paths with positive integer
+%weights in linear time {\em JACM} {\bf 46} (1999).  \end{thebibliography}
 
 \end{document}
