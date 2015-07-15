@@ -1,0 +1,35 @@
+Início do treinamento: 14-Jul-2015 23:38:48
+
+ANFIS info: 
+        Number of nodes: 34
+        Number of linear parameters: 32
+        Number of nonlinear parameters: 18
+        Total number of parameters: 50
+        Number of training data pairs: 574913
+        Number of checking data pairs: 0
+        Number of fuzzy rules: 8
+
+
+Start training ANFIS ...
+
+   1     0.0106789
+   2     0.0105007
+   3     0.0103283
+   4     0.0101611
+   5     0.00999885
+Step size increases to 0.011000 after epoch 5.
+   6     0.00984111
+   7     0.00967247
+   8     0.00950864
+   9     0.0093494
+Step size increases to 0.012100 after epoch 9.
+  10     0.00919465
+
+Designated epoch number reached --> ANFIS training completed at epoch 10.
+
+Final do treinamento: 15-Jul-2015 00:12:18
+Total de erros: 
+    32
+
+Porcentagem de erros: 
+    0.0056
