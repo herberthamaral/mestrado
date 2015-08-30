@@ -1,0 +1,124 @@
+\documentclass[11pt]{article}
+\usepackage{mathtools}
+\usepackage{epsfig,psfrag}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[utf8]{inputenc}
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\selectlanguage{brazil}
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Mineração de dados $\bullet$ 2015}}
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%    TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Primeira Lista de Exercícios}} % Article title
+
+\author{
+\large
+\textsc{Herberth Amaral}\\[2mm]
+\normalsize Departamento de Ciência da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{herberthamaral@gmail.com}
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+\newpage
+
+\section*{Exercícios}
+
+\begin{enumerate}
+    \item{1} Objetivo
+    \item{2} Detalhamento
+        \begin{enumerate}
+            \item{2.1}
+                \begin{enumerate}
+                    \item{a} Número de exemplares: 8. Número de atributos: 5.
+                    \item{b} Código de aluno: inteiro positivo. Nota 1 e nota
+                        2: real. Hora de estudo: inteiro positivo. Situação:
+                        categórica (pode ser tratado como booleano também).
+                    \item{c} Não há valores, atributos ou objetos ausentes.
+                        Também não há discrepâncias ou violações de domínio.
+                        Porém, como os valores das notas são próximos, podemos
+                        tentar diminuir a dimensão do dataset eliminando uma
+                        das notas. O atributo de código de aluno também é
+                        descartável. As horas de estudo a primeira vista também
+                        parecem ser um indicador de desempenho da nota. A
+                        situação do aluno pode ser descartada porque é obtida
+                        com uma regra básica (nota > 6).
+                    \item{d} Conforme algoritmos implementados e disponíveis no
+                        arquivo $lista1.py$, a correlação das notas utilizando
+                        o método de Pearson é de 0.999844482844, o que torna
+                        uma das notas um candidato a exclusão. Já a correlação
+                        da normalização utilizando z-score de uma das notas e
+                        das horas de estudo é 0.695484993417, que chega bem
+                        próximo, mas não atinge o limiar proposto de > 0.7 ou <
+                        -0.7.
+                \end{enumerate}
+            \item{2.2}
+                \begin{enumerate}
+                    \item{a} Número de exemplares: 12. Número de atributos: 4. Com
+                        relação aos tipos: altura e largura são inteiros,
+                        aspecto é real, e classe é categórica/booleana.
+                    \item{b} É necessário alguns passos de pré-processamento.
+                        Primeiramente há valores faltantes. Alguns desses
+                        valores podem ser inferidos utilizando o fato que o
+                        aspecto é a razão entre a largura e a altura.
+                        Obviamente a inferência não será possível quando mais
+                        de um valor dentre a altura, largura e aspecto estiver
+                        faltando. Neste caso, pode-se considerar a imputação
+                        desses valores. Pelos cálculos feitos e disponíveis no
+                        arquivo $lista1.py$, não há grandes correlações entre
+                        variáveis normalizadas.
+                    \item{c} Disponível no arquivo $lista1.py$.
+                \end{enumerate}
+        \end{enumerate}
+\end{enumerate}
+
+\end{document}

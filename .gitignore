@@ -6,3 +6,4 @@ IC/trabalho-pratico/dataset/*
 *.log
 *.out
 *.swp
+*.pyc
