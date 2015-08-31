@@ -1,0 +1,183 @@
+\documentclass[11pt]{article}
+\usepackage{epsfig,psfrag}
+\usepackage{amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Inteligência Computacional $\bullet$ 2015}} 
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Segundo trabalho prático de inteligência computacional}} % Article title
+
+\author{
+\large
+\textsc{Nome}\\[2mm] % Your name
+\normalsize Departamento de Ciências da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{Herberth Amaral} % Your email address
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+\selectlanguage{brazil}
+
+\section{Introdução}
+
+O presente trabalho analisa o uso de redes neuro-fuzzy para fazer classificação
+de dados de comparação de registros, a fim de categoriza-los como registros
+correspondentes ou não-correspondentes, em um processo conhecido como record
+linkage.
+
+A base de dados contém os resultados de comparação de dados demográficos
+provenientes do registro epidemiológico de câncer do estado alemão de
+Rhine-Westphalia \cite{dataset}. 
+
+Uma versão semelhante deste trabalho utilizando o mesmo dataset em uma rede
+neural do tipo perceptron de múltiplas camadas já foi apresentado para esta
+disciplina.
+
+\section{Record linkage}
+
+Esta seção contém uma breve introdução do processo de record linkage e foi
+inteiramente inspirada em um survey sobre o assunto \cite{survey}.
+
+Record linkage é o processo de identificar registros diferentes ou múltiplos
+que correspondem a uma entidade real ou a um objeto. Segundo o processo
+é conhecido como outros nomes, como merge-purge, data deduplication, instance
+identification, coreference resolution, identity uncertainty e duplicate
+detection.
+
+O processo de record linkage é composto majoritariamente de 3 fases: preparação
+de dados, comparação de campos e, finalmente, detecção de duplicidade.
+
+A fase de preparação de dados conta com os passos de análise, transformação de
+dados e normalização de dados. Esta fase tem como objetivo remover
+heterogenidades dos dados com o fim de facilitar (ou mesmo permitir) a
+comparação. Um exemplo seria um processo de record linkage para achar
+duplicações em uma base de dados de pacientes: os acentos dos nomes seriam
+removidos, todas as letras seriam colocadas em minúsculo e contrações, como
+"Ma" seriam convertidos para "Maria".
+
+A fase de comparação de campos tem o objetivo de medir o nível de semelhança
+entre os campos de dois registros previamente preparados. Essa métrica é obtida
+através de comparação feita com algoritmos específicos que levam em conta a
+distância de edição (distância Levenshtein, distância Jaro-Winkler,
+Smith-Waterman, dentre outras), de token (strings atômicas, WHIRL) e
+semelhança fonética (soundex, NYSSIIS, ONCA, Metaphone).
+
+Finalmente, há a fase de detecção de registros duplicados. Nesta fase, os dados
+provenientes da etapa anterior são analisados e classificados entre
+correspondentes ou não-correspondentes. Esta classifcação pode ser
+probabilística ou determinística.
+
+\section{Características da base de dados}
+
+A base de dados é composta de registros provenientes da fase de comparação de
+dados e cada linha contém as seguintes informações:
+
+\begin{enumerate}
+    \item $id\_1$: identificador do primeiro registro.
+    \item $id\_2$: identificador do segundo registro.
+    \item $cmp\_fname\_c1$: nível de concordância do primeiro nome, primeiro componente
+    \item $cmp\_fname\_c2$: nível de concordância do primeiro nome, segundo componente
+    \item $cmp\_lname\_c1$: nível de concordância do primeiro sobrnome, primeiro componente
+    \item $cmp\_lname\_c2$: nível de concordância do primeiro sobrnome, segundo componente
+    \item $cmp\_sex$: nível de concordância do sexo
+    \item $cmp\_bd$: nível de concordância agreement da data de nascimento, componente do dia
+    \item $cmp\_bm$: nível de concordância agreement da data de nascimento, componente do mês
+    \item $cmp\_by$: nível de concordância agreement da data de nascimento, componente do ano
+    \item $cmp\_plz$: nível de concordância de código postal
+    \item $is\_match$: indica se os dois registros são iguais (TRUE para iguais, FALSE para não-iguais)
+\end{enumerate}
+
+Os níveis de concordância ficam entre 0 e 1, sendo que 0 indica nenhuma
+semelhança/concordância e 1 indica total semelhança/concordância. 
+
+\section{Metodologia}
+
+A base de dados contém 5749132 registros, divididos em dez blocos de igual
+tamanho. O primeiro bloco foi usado para treinar a rede neural e os outros
+nove foram usados para validar o treinamento.
+
+Apesar da riqueza de detalhes de dados, nem todos os campos do dataset foram
+utilizados neste trabalho. Os campos usados, nomeadamente, foram: $cmp\_fname\_c1$,
+$cmp\_lname\_c1$ e uma combinação dos campos $cmp\_bd$, $cmp\_bm$ e $cmp\_by$ como forma de
+representar a equivalência de data de nascimento.
+
+O código-fonte utilizado para a realização deste trabalho pode ser encontrado
+em https://github.com/herberthamaral/mestrado/tree/master/IC/trabalho-fuzzy
+(acesso em 15/05/2015).
+
+\section{Resultados}
+
+Os testes demonstraram um resultado melhor do que a versão anterior deste
+projeto: apenas 38 erros de classificação em um total de 574913 registros de
+teste (0.0056\%) contra 108 da abordagem anterior.
+
+O bom resultado pode ser explicado pela uniformidade da base de dados.
+
+Apesar de conseguir um resultado um pouco melhor, o tempo de treinamento subiu
+de aproximadamente 5 minutos na versão MLP para 32 minutos na versão ANFIS.
+
+\section*{Referências}
+
+\begin{thebibliography}{2}
+
+\bibitem{dataset} Irene Schmidtmann, Gael Hammer, Murat Sariyar, Aslihan Gerhold-Ay;
+Evaluation des Krebsregisters NRW Schwerpunkt Record Linkage. Technical Report,
+{\em IMBEI 2009}. Disponível em \url{https://archive.ics.uci.edu/ml/datasets/Record+Linkage+Comparison+Patterns}. Acessado em 15/07/2015
+
+\bibitem{survey} Ahmed K. Elmagarmid, Panagiotis G. Ipeirotis, Vassilios S. Verykios;
+Duplicate Record Detection: A Survey. {\em IEEE TRANSACTIONS ON KNOWLEDGE AND DATA
+ENGINEERING}, VOL. 19, NO. 1, Janeiro de 2007.
+
+\end{thebibliography}
+
+\end{document}
