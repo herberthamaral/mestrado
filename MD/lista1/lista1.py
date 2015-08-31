@@ -6,7 +6,7 @@ def pearson1(x, y):
     """Fórmula aproximada de Pearson. Disponível no livro Guide to data mining, página 45"""
     if len(x) != len(y):
         raise ValueError('x e y tem tamanhos diferentes')
-    numerador = sum([x[i]*y[i] for i in xrange(len(x))]) - sum(x)*sum(y)/len(x)
+    numerador = sum([x[i]*y[i] for i in range(len(x))]) - sum(x)*sum(y)/len(x)
     denominador = math.sqrt(sum([math.pow(xi, 2) for xi in x]) - pow(sum(x), 2)/len(x))
     denominador *= math.sqrt(sum([math.pow(yi, 2) for yi in y]) - pow(sum(y), 2)/len(y))
     return numerador/denominador
@@ -19,7 +19,7 @@ def pearson2(x, y):
     if len(x) != len(y):
         raise ValueError('x e y tem tamanhos diferentes')
     xbarra, ybarra = media(x), media(y)
-    numerador = sum([(x[i] - xbarra)*(y[i] - ybarra) for i in xrange(len(x))])
+    numerador = sum([(x[i] - xbarra)*(y[i] - ybarra) for i in range(len(x))])
     denominador = math.sqrt(sum([math.pow(x[i] - xbarra, 2)]))
     denominador *= math.sqrt(sum([math.pow(y[i] - ybarra, 2)]))
     return numerador/denominador
