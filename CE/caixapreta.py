@@ -35,7 +35,7 @@ def evolucao(populacao, objetivo, retencao=0.2, selecao_aleatoria=0.05, mutacao=
     for individuo in pais:
         if mutacao > random():
             posicao_da_mutacao = randint(0, len(individuo)-1)
-            individuo[posicao_da_mutacao] = randint(min(individuo), max(individuo))
+            individuo[posicao_da_mutacao] = 1-individuo[posicao_da_mutacao]
 
     #faz o crossover dos pais para criar os filhos
     qtd_pais = len(pais)
