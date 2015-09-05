@@ -1,0 +1,3 @@
+- Primeira prova: 28/09
+- Segunda prova: 23/11
+- Apresentação do trabalho: 30/11

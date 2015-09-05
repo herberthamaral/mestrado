@@ -6,7 +6,7 @@ Primeiro exercício de computação evolutiva.
 from random import randint, random
 
 def individuo():
-    return [randint(0,1) for x in xrange(36)]
+    return [randint(0,1) for x in range(36)]
 
 def populacao(tamanho):
     return [individuo() for x in range(tamanho)]
@@ -27,9 +27,9 @@ def evolucao(populacao, objetivo, retencao=0.2, selecao_aleatoria=0.05, mutacao=
     pais = avaliacao[:qtd_retencao]
 
     # adiciona novos individuos
-    for individuo in avaliacao[qtd_retencao:]:
-        if selecao_aleatoria >= random():
-            pais.append(individuo)
+    #for individuo in avaliacao[qtd_retencao:]:
+    #    if selecao_aleatoria >= random():
+    #        pais.append(individuo)
 
     #faz mutacao de alguns indivíduos
     for individuo in pais:
@@ -41,14 +41,15 @@ def evolucao(populacao, objetivo, retencao=0.2, selecao_aleatoria=0.05, mutacao=
     qtd_pais = len(pais)
     tamanho_desejado = len(populacao) - qtd_pais
     filhos = []
+    import pdb;pdb.set_trace()
     while len(filhos) < tamanho_desejado:
         macho = randint(0, qtd_pais-1)
         femea = randint(0, qtd_pais-1)
         if macho != femea:
             macho = pais[macho]
             femea = pais[femea]
-            metade = len(macho)/2
-            filho = macho[:metade] + femea[metade:]
+            ponto_corte = randint(0, 35)
+            filho = macho[:ponto_corte] + femea[ponto_corte:]
             filhos.append(filho)
     pais.extend(filhos)
     return pais
