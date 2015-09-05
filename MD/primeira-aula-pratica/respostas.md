@@ -1,0 +1,50 @@
+1 - Acesse o repositório e identifique as 6 bases de dados mais populares;
+    - Iris dataset;
+    - Adult dataset;
+    - Wine dataset;
+    - Car evaluation dataset;
+    - Breast cancer Wisconsin (diagnostic) dataset;
+    - Abalone dataset;
+2 - Para cada uma, apresente:
+    - Características
+    - Número de instâncias
+    - Quantidade de atributos
+    - Características dos atributos
+    - A existência de valores ausentes
+
+- Iris dataset;
+    - Características: multivariada, dados reais;
+    - Número de instâncias: 150
+    - Quantidade de atributos: 5 (contando a classificação)
+    - Características dos atributos: 4 atributos inteiros e um de classe
+    - Existe valores ausentes? Não
+- Adult dataset;
+    - Características: multivariada;
+    - Número de instâncias: 48842
+    - Quantidade de atributos: 14
+    - Características dos atributos: Categórico e inteiro
+    - Existe valores ausentes? Sim
+- Wine dataset;
+    - Características: multivariada;
+    - Número de instâncias: 178
+    - Quantidade de atributos: 13
+    - Características dos atributos: Inteiro e real
+    - Existe valores ausentes? Não
+- Car evaluation dataset;
+    - Características: multivariada;
+    - Número de instâncias: 1728
+    - Quantidade de atributos: 6
+    - Características dos atributos: Categóricos
+    - Existe valores ausentes? Não
+- Breast cancer Wisconsin (diagnostic) dataset;
+    - Características: multivariada;
+    - Número de instâncias: 569
+    - Quantidade de atributos: 32
+    - Características dos atributos: Real
+    - Existe valores ausentes? Não
+- Abalone dataset;
+    - Características: multivariada;
+    - Número de instâncias: 4177
+    - Quantidade de atributos: 8
+    - Características dos atributos: Categórica, inteiro e real
+    - Existe valores ausentes? Não
