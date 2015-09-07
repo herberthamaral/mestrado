@@ -51,8 +51,17 @@
 
 2.3
 a)
-b) Executar o arquivo exercicios.py (necessário ter numpy e matplotlib);
-c) Visualmente falando não foi possível detectar um outlier, mas utilizando o critério de Chauvenet foi possível identificar um outlier na 16º amostra (largura sepal)
+ - sepal length em cm : comprimento da sépala em centimetros : valores reais positivos
+ - sepal width em cm: largura da sépala em centimetos : valores reais positivos
+ - pental length em cm : comprimento da pétala em centimetros : valores reais positivos
+ - pental width em cm: largura da pétala em centimetros : valores reais positivos
+ - Classe = atributo que informa a qual classe cada objeto da base pertence. São 3 classes possíveis: íris setosa, íris versicolor, íris virgínica
+
+b) Ver as figuras de histograma nesta pasta
+c) Visualmente não foi possível detectar um outlier com a plotagem padrão, mas utilizando o
+critério de Chauvenet foi possível identificar um outlier na 16º amostra
+(largura sepal). No entanto, uma exibição ordenada do dataset permitiu uma melhor visualização do outlier em questão.
+
 d) Disponível na execução do arquivo exercicios.py:
     - Correlação linear entre altura sepal e largura sepal: -0.109369249951, baixa e inversamente proporcional
     - Correlação linear entre altura sepal e altura petal: 0.871754157305, alta e diretamente proporcional
@@ -63,4 +72,4 @@ d) Disponível na execução do arquivo exercicios.py:
 e) Altura sepal (pode ser substituida por altura petal e largura petal) e largura petal (pode ser substituido por largura sepal e altura petal)
 
 2.4
-a) Ver com Marcelino
+a) Dados faltantes em: horas trabalhadas por semana, work class, occupation.
