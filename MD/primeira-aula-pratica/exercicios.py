@@ -107,17 +107,52 @@ def exercicio24b():
     save_dataset(adult, filename)
     print("Dados inputados salvos em ", filename)
 
-def exercicio25a():
-    pass
+def minmax(x, xi):
+    return (float(xi) - min(x))/(float(max(x))-min(x))
 
-def exercicio26a():
-    pass
+def exercicio25a():
+    cancer = load_dataset('breast-cancer-wisconsin.data')
+    # inputa os valores faltantes:
+    for linha in cancer:
+        sem_faltantes = np.array([i for i in cancer.T[6] if i != '?']).astype(float)
+        linha[6] =  np.median(sem_faltantes) if linha[6] == '?' else linha[6]
+
+    #normaliza utilizando min-max
+    for numlinha, linha in enumerate(cancer.astype(float)):
+        for numcoluna, coluna in enumerate(linha):
+            if numcoluna != 0: #ignora a coluna de ID
+                cancer[numlinha][numcoluna] = minmax(cancer.T[numcoluna].astype(float), float(cancer[numlinha][numcoluna]))
+    filename = 'cancer-ex25a.data'
+    save_dataset(cancer, filename)
+    print("Dados normalizados com min max salvos em ", filename)
+
+def z_score(x, xi):
+    xbarra = np.median(x)
+    numerador = xi-xbarra
+    return numerador/np.std(x)
+
+def exercicio25b():
+    cancer = load_dataset('breast-cancer-wisconsin.data')
+    # inputa os valores faltantes:
+    for linha in cancer:
+        sem_faltantes = np.array([i for i in cancer.T[6] if i != '?']).astype(float)
+        linha[6] =  np.median(sem_faltantes) if linha[6] == '?' else linha[6]
+
+    #normaliza utilizando min-max
+    for numlinha, linha in enumerate(cancer.astype(float)):
+        for numcoluna, coluna in enumerate(linha):
+            if numcoluna != 0: #ignora a coluna de ID
+                cancer[numlinha][numcoluna] = z_score(cancer.T[numcoluna].astype(float), float(cancer[numlinha][numcoluna]))
+    filename = 'cancer-ex25b.data'
+    save_dataset(cancer, filename)
+    print("Dados normalizados com escore-z salvos em ", filename)
+
 
 # pesquisar distancia de quartis, gráfico de dispersão, box plot
 if __name__ == '__main__':
     funcoes_disponiveis = {'exercicio23b': exercicio23b, 'exercicio23c': exercicio23c, 'exercicio23d': exercicio23d,
-                           'exercicio24a': exercicio24a, 'exercicio24b': exercicio24b}
-    if len(sys.argv) != 2:
+            'exercicio24a': exercicio24a, 'exercicio24b': exercicio24b, 'exercicio25a': exercicio25a, 'exercicio25b': exercicio25b}
+    if len(sys.argv) != 2 or sys.argv[1] not in funcoes_disponiveis:
         print("Uso: python exercicios.py ({})".format('|'.join(funcoes_disponiveis.keys())))
         print("Exemplo: python exercicios.py exercicio23c")
         sys.exit(1)
