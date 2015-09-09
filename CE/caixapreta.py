@@ -65,7 +65,7 @@ def selecao_torneio(populacao, objetivo, retencao):
 
 def mutacao_normal(individuos, taxa_mutacao):
     for individuo in individuos:
-        if random() > taxa_mutacao:
+        if taxa_mutacao > random():
             posicao_da_mutacao = randint(0, len(individuo)-1)
             individuo[posicao_da_mutacao] = 1-individuo[posicao_da_mutacao]
     return individuos
@@ -73,7 +73,7 @@ def mutacao_normal(individuos, taxa_mutacao):
 def mutacao_uniforme(individuos, taxa_mutacao):
     for i, individuo in enumerate(individuos):
         for c, cromossomo in enumerate(individuo):
-            if random() > taxa_mutacao:
+            if random() < taxa_mutacao:
                 individuos[i][c] = 1-individuos[i][c]
     return individuos
 
@@ -93,7 +93,7 @@ def cruzamento_normal(pais, populacao):
             filhos.append(filho)
     return filhos
 
-def evolucao(populacao, objetivo, retencao=0.2, taxa_mutacao=0.01, selecao=selecao_normal, mutacao=mutacao_normal, cruzamento=cruzamento_normal):
+def evolucao(populacao, objetivo, retencao=0.2, taxa_mutacao=0.01, selecao=selecao_normal, mutacao=mutacao_uniforme, cruzamento=cruzamento_normal):
     pais = selecao(populacao, objetivo, retencao)
     filhos = cruzamento(pais, populacao)
     filhos = mutacao(filhos, taxa_mutacao)
@@ -115,10 +115,8 @@ if __name__ == '__main__':
         while True:
             iteracoes += 1
             pop = evolucao(pop, objetivo, taxa_mutacao=0.025, selecao=selecao)
-            #print "Fitness medio da populacao: ", fitness_medio_populacao(pop, objetivo)
             avaliacao = [(objetivo - fitness(i, objetivo), i) for i in pop]
             melhor_fitness = fitness(avaliacao[0][1], objetivo)
-            #print "Melhor individuo: ", melhor_fitness
             if melhor_fitness == objetivo:
                 print "Encontrado melhor individuo depois de {} geracoes: ".format(iteracoes), avaliacao[0][1]
                 execucoes.append(iteracoes)
