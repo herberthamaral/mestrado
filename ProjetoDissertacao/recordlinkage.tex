@@ -1,0 +1,399 @@
+%-----------------
+% verso e anverso:
+%-----------------
+%\documentclass[10pt,twoside,openany,a4paper,portuguese]{abntex2}	
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openany,			% capítulos começam em qualquer página
+	%openright,            capítulos começam em pág ímpar (insere página vazia caso preciso)
+	twoside,			% para impressão em verso e anverso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	brazil,				% o último idioma é o principal do documento
+	]{unimontes-ppgmsc-abntex2}
+
+% -------
+% PACOTES
+% -------
+
+% --------------------
+% Pacotes fundamentais 
+% --------------------
+\usepackage{cmap}				% Mapear caracteres especiais no PDF
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+%\usepackage[latin1]{inputenc} 	% ISO 8859-1 (windows portugues)
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage{tikz,fullpage}
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{pict2e}				% Pacotes graficos para figuras usando comandos de LaTeX
+\usepackage{xcolor}
+\usepackage{listings}           % Inclusão de arquivos de código de programação
+\usepackage{showexpl}           % exibe codigos de figuras
+\usepackage{verbatim}           % incluir arquivos não processados pelo Latex
+\usepackage{algorithmic} %
+\usepackage[portuguese,ruled,lined]{algorithm2e} % Inclusão de algoritmos(pseudo código) em portugues
+\usepackage{colortbl}
+\usepackage{placeins}
+\usepackage{amsthm} 			% amsthm -> teorema de demonstracao
+\usepackage{amsmath} 			% amsmath -> recursos avancados de matematica
+\usepackage{amssymb} 			% amssymb -> symbolos e fontes adicionais (ele inclui amsfonts)
+\usepackage{enumerate}			% para configurar a lista enumerada
+\usepackage{longtable}			% tabela longa que quebra entre páginas
+\usepackage{hhline}				% linhas duplas na tabela
+%\usepackage[usenames]{color}	%Para cores ex.: {\color{Red} Texto em vermelho}
+
+
+
+% ---
+
+% -------------------
+% Pacotes de citações
+% -------------------
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf, abnt-url-package=url,]{abntex2cite}	% Citações padrão ABNT
+%\usepackage{abntex2cite}	% Citações padrão ABNT
+
+%----------------------------------------
+% Definição de cores utilizadas no código
+%----------------------------------------
+\definecolor{dkgreen}{RGB}{0,0.6,0}
+\definecolor{gray}{RGB}{0.5,0.5,0.5}
+\definecolor{mauve}{RGB}{0.58,0,0.82}
+\definecolor{verde}{RGB}{0.25,0.5,0.35}
+\definecolor{verdecpp}{RGB}{0,0.5,0}
+\definecolor{verdejava}{RGB}{0.25,0.5,0.35}
+\definecolor{jpurple}{RGB}{0.5,0,0.35}
+\definecolor{mygreen}{RGB}{0,0.6,0}
+\definecolor{mygray}{RGB}{0.5,0.5,0.5}
+\definecolor{mymauve}{RGB}{0.58,0,0.82}
+\definecolor{blue}{RGB}{41,5,195}
+\definecolor{graytb}{RGB}{0.8,0.8,0.8}
+
+%-----------------------------
+% configuração de codigo fonte
+%-----------------------------
+\lstdefinestyle{Java}
+{
+  language={Java},
+  inputencoding=,
+  basicstyle=\ttfamily\small, 
+  keywordstyle=\color{jpurple}\bfseries,
+  stringstyle=\color{red},
+  commentstyle=\color{verdejava},
+  morecomment=[s][\color{blue}]{/*}{*/},
+  morecomment=[l][\color{blue}]{//},
+  extendedchars=true, 
+  showspaces=false, 
+  showstringspaces=false, 
+  extendedchars=true, 
+  numbers=left,
+  numberstyle=\tiny,
+  breaklines=true, 
+  backgroundcolor=\color{cyan!10}, 
+  breakautoindent=true, 
+  captionpos=b,
+  xleftmargin=0pt,
+  tabsize=4
+}
+
+
+% ------------------------ 
+% CONFIGURAÇÕES DE PACOTES
+% ------------------------
+
+% -------------------------------
+% Configurações do pacote backref
+% Usado sem a opção hyperpageref de backref
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+% Texto padrão antes do número das páginas
+\renewcommand{\backref}{}
+% Define os textos da citação
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1 %
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado #1 vezes nas páginas #2.%
+	\fi}%
+
+
+\headheight 1.4 cm
+%\footheight 0.5cm
+% ---
+
+
+% -----------------------------------------------
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% -----------------------------------------------
+\titulo{Tratamento de dados faltantes em uma solução de record linkage com datasets heterogêneos}
+\autor{Herberth Giuliano Amaral Silva}
+\local{Montes Claros - MG}
+\data{2015}
+\instituicao{UNIVERSIDADE ESTADUAL DE MONTES CLAROS \par Centro de Ciências Exatas e Tecnológicas \par Programa de Pós Graduação Modelagem Computacional e Sistemas} 
+\tipotrabalho{Projeto (Mestrado)}
+\orientador[Orientador:]{Prof. Dr. Renê Rodrigues Veloso}
+\preambulo{Projeto para o Programa de Pós graduação Mestrado em Modelagem Computacional e Sistemas com o objetivo de desenvolver um modelo de record linkage que suporte integração de datasets heterogêneos com dados faltantes}
+% ---
+
+%-------------------
+% informações do PDF
+%-------------------
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={record linkage},
+		pdfkeywords={palavras chave}{análise}{complexidade}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+
+\makeatother
+% --- 
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.5cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+%\pagestyle{empty}
+\pagestyle{headings}
+%\pagestyle{ruledheader}
+
+% ----------------
+% compila o indice
+% ----------------
+\makeindex
+% ---
+
+% -------------------
+% Início do documento
+% -------------------
+\begin{document}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ----
+% Capa
+% ----
+\imprimircapa
+% ---
+
+% --------------
+% Folha de rosto
+% --------------
+%\imprimirfolhaderosto
+% ---
+
+% ---
+% inserir lista de ilustrações
+% ---
+%\pdfbookmark[0]{\listfigurename}{lof}
+%\listoffigures*
+%\clearpage
+%\cleardoublepage
+% ---
+
+% ------------------------
+% inserir lista de tabelas
+% ------------------------
+%\pdfbookmark[0]{\listtablename}{lot}
+%\listoftables*
+%\clearpage
+%\cleardoublepage
+% ---
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+%\begin{siglas}
+%  \item[Fig.] Area of the $i^{th}$ component
+%  \item[456] Isto é um número
+%  \item[123] Isto é outro número
+%  \item[lauro cesar] este é o meu nome
+%\end{siglas}
+% ---
+
+% ---
+% inserir lista de símbolos
+% ---
+%\begin{simbolos}
+%  \item[$ \Gamma $] Letra grega Gama
+%  \item[$ \Lambda $] Lambda
+%  \item[$ \zeta $] Letra grega minúscula zeta
+%  \item[$ \in $] Pertence
+%\end{simbolos}
+% ---
+
+% -----------------
+% inserir o sumario
+% -----------------
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\clearpage
+%\cleardoublepage
+% ---
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+% É possível usar \textual ou \mainmatter, que é a macro padrão do memoir.  
+\mainmatter
+
+% ----------------------------------------------------------
+% Introdução
+% Apresentação do problema, justificativa, objetivos e métodos.
+% ----------------------------------------------------------
+\chapter[Introdução]{Introdução}
+
+Introdução
+
+% \begin{alineas}
+% \item Minas a céu aberto, especificamente um estudo aprofundado sobre o problema de planejamento de minas com alocação dinâmica de veículos;
+% \item Otimização multiobjetivo com ênfase em algoritmos evolucionários e VNS; 
+% \item Técnicas de busca local para otimização mono e multiobjetivo. 
+% \end{alineas}
+
+\chapter{Proposta da Pesquisa}
+
+\section{Justificativa}O processo de \textit{record linkage} é um dos desafios nas atividades de limpeza de dados (\textit{data cleasing}) em Mineração de Dados. No entanto, as técnicas clássicas de \textit{record linkage} não lidam eficientemente com dados faltantes \cite{ong}. Essa característica é uma grande desvantagem porque diferentes bases de dados podem ter diferentes características no que diz respeito à presença dados necessários no processo de \textit{record linkage}. Para não comprometer o processo de \textit{record linkage}, técnicas para lidar com falta de dados precisam ser empregadas.
+
+\section{Objetivo Geral} Desenvolver um modelo de record linkage que suporte integração de datasets heterogêneos com dados faltantes (aleatoriamente ou não) que apresente valores mínimos de falsos-negativos;
+
+\section{Objetivos Específicos}
+\begin{alineas}
+        \item Um algoritmo eficiente do ponto de vista de precisão/revocação;
+        \item Uma solução de ajustes de parâmetros automatizada para o modelo em questão;
+        \item Extensões de algoritmos para comparacao de tuplas em meio a dados faltantes. 
+\end{alineas}
+
+
+% Capitulo de textual  
+% -------------------
+\chapter{Referencial Teórico}
+\section{\textit{Record linkage}}
+\textit{Record linkage} é o processo de encontrar registros duplicados em uma ou mais de dados que se referem à uma mesma entidade \cite{survey}. O processo é conhecido por deduplicação quando aplicado em um único banco de dados.
+
+A teoria de record linkage foi desenvolvida inicialmente por \cite{fellegi}. O processo pode ser compreendido por uma função $\mu(t_1,t_2)$ que analisa a similaridade de um par de tuplas. Esta função tem como retorno uma probabilidade, que pode ser classificada como "equivalente" (quando é possível afirmar que o par de tuplas representa a mesma entidade), "possivelmente equivalente" (quando não há informações suficientes para afirmar se é ou não equivalente) e "não equivalente" (quando há informações suficientes para afirmar que o par de tuplas \textbf{não} representam a mesma entidade).
+
+Como ilustração de funcionamento, considere o conjunto de dados de exemplo abaixo:
+
+\begin{table}[!htpb]
+    \centering
+    \caption{Dados demográficos}
+    \label{dataset}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{ID} & \textbf{Nome} & \textbf{Data de nascimento} & \textbf{Endereço} & \textbf{Telefone} \\ \hline
+        1 & João Pedro da Silva            & 01/04/1985                                   & Rua das Camélias, 325              & 92368080                           \\ \hline
+        2 & João Pedro Silva               & 01/04/1985                                   & Rua das Tulipas, 180               & 92338080                           \\ \hline
+        3 & Joana Paula Silva              & 02/09/1992                                   & Rua das Tulipas, 180               & 32225478                           \\ \hline
+        4 & Joana P. Silva                 & 02/09/1962                                   & Av. das Bromélias, 98              & 32225478                           \\ \hline
+    \end{tabular}
+\end{table}
+
+Para deduplicar o conjunto de dados mostrado anteriormente, é necessário fazer comparações de todos os possíveis pares de tuplas ($C = n!/2(n-2)!$) utlizando a função $\mu(t_1,t_2)$. Desta forma, o conjunto gerado pela comparação dos registros previamente mencionados é:
+
+\begin{table}[!htpb]
+    \centering
+    \caption{Comparações de tuplas da tabela de dados demográficos}
+    \label{comparacao}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{ID 1} & \textbf{ID 2} & \textbf{Nome} & \textbf{Data de nascimento} & \textbf{Endereço} & \textbf{Telefone} & \textbf{\textit{Score}} \\ \hline
+        1 & 2 & 0.94 & 1.00 & 0.85 & 0.91 & 3.71 \\ \hline
+        1 & 3 & 0.62 & 0.67 & 0.85 & 0.47 & 2.62 \\ \hline
+        1 & 4 & 0.78 & 0.67 & 0.62 & 0.47 & 2.55 \\ \hline
+        2 & 3 & 0.63 & 0.67 & 1.00 & 0.47 & 2.78 \\ \hline
+        2 & 4 & 0.82 & 0.67 & 0.67 & 0.47 & 2.65 \\ \hline
+        3 & 4 & 0.89 & 0.93 & 0.67 & 1.00 & 3.50 \\ \hline
+    \end{tabular}
+\end{table}
+
+As comparações de campo-a-campo foram feitas utilizando o algoritmo de Jaro-Winkler \cite{jaro}. No final, define-se um \textit{score} que será utilizado para classificação em "equivalente", "não equivalente" e "possivelmente equivalente". Neste exemplo, os pares de tuplas $(1,2)$ e $(3,4)$ são equivalentes. Como parâmetros desta solução em particular, pode-se definir os limiares 3.0 para "possivelmente equivalentes" e 3.4 para "equivalentes", uma vez que todos os valores abaixo de 3.0 não são equivalentes e todos os valores acima de 3.4 são equivalentes.
+
+% --------------------------------------------------------------
+% Capitulo com exemplos de comandos inseridos de arquivo externo 
+% --------------------------------------------------------------
+\chapter{Cronograma}
+\begin{table}[!htpb]
+	\centering
+ \begin{tabular}{|c|l|c|}
+ 	\hline \textbf{Item} & \textbf{Descrição} & \textbf{Tempo} \\ 
+ 	\hline 01 & Conclusão das Disciplinas Regulares & 1º semestre 2015 \\ 
+ 	\hline 02 & Levantamento Bibliográfico & 1º semestre 2015 \\ 
+ 	\hline 03 & Definição de Conceitos &  2º trimestre 2015\\ 
+ 	\hline 04 & Comparação dos algoritmos & 2º semestre 2015 \\ 
+ 	\hline 05 & Desenvolvimento do algoritmo & 1º semestre 2016 \\ 
+ 	\hline 06 & Redação da Dissertação &  2º trimestre 2016\\ 
+ 	\hline 08 & Defesa &  3º trimestre 2016 \\ 
+ 	\hline 
+ \end{tabular} 
+	\caption{Cronograma}
+	\label{t_fixa}
+\end{table}
+ 
+
+
+
+%-----------
+% Resultados
+%-----------
+
+% ---
+% Finaliza a parte no bookmark do PDF, para que se inicie o bookmark na raiz
+% ---
+%\bookmarksetup{startatroot}% 
+% ---
+
+% ---------
+% Conclusão
+% ---------
+%\chapter[Considerações finais]{Considerações finais}
+
+
+
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+\renewcommand{\bibname}{REFER\^ENCIAS}
+\bibliography{recordlinkage}
+
+\printindex
+
+
+\end{document}
