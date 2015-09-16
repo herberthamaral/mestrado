@@ -274,7 +274,13 @@
 % ----------------------------------------------------------
 \chapter[Introdução]{Introdução}
 
-Introdução
+Um dos grandes desafios da medicina moderna é a agregação de dados de pacientes em um único local (colocar citação). O desafio apresenta-se por vários fatores incluindo, mas não se limitando a: múltiplos prestadores de assistência à saúde, infraestrutura de comunicação precária, disputas políticas e problemas de sigilo médico.
+
+Resolvidos os problemas de natureza não-tecnológica, uma solução de \textit{record linkage} faz-se necessária para unificação dos registros médicos. Tal solução é responsável por identificar tuplas em bancos de dados que correspondem à uma mesma entidade (neste caso, um paciente). Desta forma é possível identificar unicamente um paciente e seus registros médicos em uma miríade de sistemas de apoio a saúde.
+
+No entanto, o processo de \textit{record linkage}, mesmo tendo sua fundamentação teórica consolidada há mais de 40 anos por \cite{fellegi} ainda apresenta vários desafios. Um desses desafios consiste na falta de dados (eventual ou não) necessários para o processo de descoberta de entidades únicas, algo que técnicas comuns de \textit{record linkage} não lidam bem \cite{ong}. As faltas de dados ocorrem por diversos motivos, tais como diferentes estruturas de bases de dados, diferentes requisitos de preenchimento de dados de pacientes em difierentes sitemas de apoio à saúde e negligência no preenchimento de cadastros.
+
+Este trabalho visa buscar soluções para o problema de \textit{record linkage} em bases de dados heterogêneas (de diferentes sistemas de apoio à saúde) que possuem dados faltantes de pacientes.
 
 % \begin{alineas}
 % \item Minas a céu aberto, especificamente um estudo aprofundado sobre o problema de planejamento de minas com alocação dinâmica de veículos;
@@ -284,7 +290,7 @@ Introdução
 
 \chapter{Proposta da Pesquisa}
 
-\section{Justificativa}O processo de \textit{record linkage} é um dos desafios nas atividades de limpeza de dados (\textit{data cleasing}) em Mineração de Dados. No entanto, as técnicas clássicas de \textit{record linkage} não lidam eficientemente com dados faltantes \cite{ong}. Essa característica é uma grande desvantagem porque diferentes bases de dados podem ter diferentes características no que diz respeito à presença dados necessários no processo de \textit{record linkage}. Para não comprometer o processo de \textit{record linkage}, técnicas para lidar com falta de dados precisam ser empregadas.
+\section{Justificativa}O processo de \textit{record linkage} é um dos desafios nas atividades de limpeza de dados (\textit{data cleasing}) em Mineração de Dados e é um processo fundamental na unificação de prontuários eletrônicos. No entanto, as técnicas clássicas de \textit{record linkage} não lidam eficientemente com dados faltantes \cite{ong}. Essa característica é uma grande desvantagem porque diferentes bases de dados podem ter diferentes características no que diz respeito à presença dados necessários no processo de \textit{record linkage}. Para não comprometer o processo de \textit{record linkage}, técnicas para lidar com falta de dados precisam ser empregadas.
 
 \section{Objetivo Geral} Desenvolver um modelo de record linkage que suporte integração de datasets heterogêneos com dados faltantes (aleatoriamente ou não) que apresente valores mínimos de falsos-negativos;
 
@@ -358,7 +364,13 @@ A abordagem tradicional no contexto de \textit{record linkage} para mitigar o pr
 
 \subsection{Comparação}
 
+Uma das fontes mais comuns de não-equivalências em tuplas de bases de dados são variações tipográficas \cite{survey2}. Desta forma, algoritmos de comparação de \textit{strings} são necessários para estipular o grau de proximidade entre campos das tuplas. Os algoritmos mais comuns são: distância de edição, distância \textit{affine gap}, distância de Smith-Waterman, distância de Jaro e distância \textit{Q-gram}.
 
+Para complementar o trabalho dos algoritmos de comparação de strings existem algoritmos de comparação de \textit{token}, que lidam melhor com rearranjos de informação (ex: "Pedro Silva" por "Silva, Pedro" ou "Av." por "Avenida"). Alguns exemplos de algoritmos de comparação por token são: strings atômicas, \textit{WHIRL} e \textit{Q-grams} com tf.idf. Todos os métodos previamente citados são descritos com detalhes em \cite{survey2}.
+
+\subsection{Classificação}
+
+A comparação de strings é útil para detectar similaridade em campos únicos. No entanto, no processo de \textit{record linkage}, um único campo pode não ser o suficiente para uma boa classificação. Para esses casos, algumas abordagens complementares são necessárias. Algumas abordagens disponíveis na literatura são as abordagens probabilísticas, aprendizado supervisionado e semi-supervisionado, aprendizado ativo, distâncias, regras e não-supervisionada \cite{survey2}.
 
 
 % --------------------------------------------------------------
