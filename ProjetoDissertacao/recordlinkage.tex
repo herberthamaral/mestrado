@@ -300,11 +300,15 @@ Introdução
 % -------------------
 \chapter{Referencial Teórico}
 \section{\textit{Record linkage}}
+\subsection{Introdução}
+
 \textit{Record linkage} é o processo de encontrar registros duplicados em uma ou mais de dados que se referem à uma mesma entidade \cite{survey}. O processo é conhecido por deduplicação quando aplicado em um único banco de dados.
 
-A teoria de record linkage foi desenvolvida inicialmente por \cite{fellegi}. O processo pode ser compreendido por uma função $\mu(t_1,t_2)$ que analisa a similaridade de um par de tuplas. Esta função tem como retorno uma probabilidade, que pode ser classificada como "equivalente" (quando é possível afirmar que o par de tuplas representa a mesma entidade), "possivelmente equivalente" (quando não há informações suficientes para afirmar se é ou não equivalente) e "não equivalente" (quando há informações suficientes para afirmar que o par de tuplas \textbf{não} representam a mesma entidade).
+A teoria de record linkage foi desenvolvida inicialmente por \cite{fellegi}. A parte principal do processo pode ser compreendido por uma função $\mu(t_1,t_2)$ que analisa a similaridade de um par de tuplas. Esta função tem como retorno uma probabilidade, que pode ser classificada como "equivalente" (quando é possível afirmar que o par de tuplas representa a mesma entidade), "possivelmente equivalente" (quando não há informações suficientes para afirmar se é ou não equivalente) e "não equivalente" (quando há informações suficientes para afirmar que o par de tuplas \textbf{não} representam a mesma entidade).
 
-Como ilustração de funcionamento, considere o conjunto de dados de exemplo abaixo:
+O processo de \textit{record linkage} conta com sub-tarefas para sua realização: tais como limpeza e padronização de dados, indexação, comparação e classificação e revisão manual. Cada uma dessas sub-tarefas serão detalhadas nas subseções a seguir.
+
+Como ilustração de funcionamento de uma solução de \textit{record linkage}, considere o conjunto de dados de exemplo abaixo:
 
 \begin{table}[!htpb]
     \centering
@@ -339,6 +343,23 @@ Para deduplicar o conjunto de dados mostrado anteriormente, é necessário fazer
 \end{table}
 
 As comparações de campo-a-campo foram feitas utilizando o algoritmo de Jaro-Winkler \cite{jaro}. No final, define-se um \textit{score} que será utilizado para classificação em "equivalente", "não equivalente" e "possivelmente equivalente". Neste exemplo, os pares de tuplas $(1,2)$ e $(3,4)$ são equivalentes. Como parâmetros desta solução em particular, pode-se definir os limiares 3.0 para "possivelmente equivalentes" e 3.4 para "equivalentes", uma vez que todos os valores abaixo de 3.0 não são equivalentes e todos os valores acima de 3.4 são equivalentes.
+
+\subsection{Limpeza e padronização dos dados}
+
+Pelo fato que boa parte dos dados do mundo real são "sujos" e contém informações ruidosas, incompletas e mal-fortatadas, a tarefa de limpeza dos dados é crucial para o restante do processo \cite{churches}. Já é reconhecido que a falta de dados de boa qualidade pode ser um dos grandes obstáculos para uma solução de \textit{record linkage} de sucesso \cite{clark}.
+
+O objetivo principal da tarefa de limpeza e padronização dos dados é a conversão de dados brutos de entrada em um conjunto de dados bem definido e consistente \cite{churches}.
+
+\subsection{Indexação}
+
+Em sua natureza, o processo de \textit{record linkage} é um processo de complexidade combinatorial, pois precisa analisar todos as combinações de pares de tuplas em uma ou mais bases de dados. Porém, a vasta maioria das comparações é feita em registros que não são equivalentes \cite{survey}, o que leva a um desperdício de recursos computacionais.
+
+A abordagem tradicional no contexto de \textit{record linkage} para mitigar o problema previamente descrito é conhecido como \textit{blocking}. Essa estratécia consiste em dividir os dados em blocos não-sobrepostos de forma que somente dados dentro de cada bloco são comparados entre si. Um critério de \textit{blocking}, comumente chamado de chave de \textit{blocking}, é baseado em um único campo ou na concatenação de valores de vários campos \cite{survey}.
+
+\subsection{Comparação}
+
+
+
 
 % --------------------------------------------------------------
 % Capitulo com exemplos de comandos inseridos de arquivo externo 
