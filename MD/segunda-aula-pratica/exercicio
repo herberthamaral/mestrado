@@ -1,0 +1,7 @@
+Implementar kmeans e kmeans++
+Estrutura de dados: matrizes e arrays do numpy
+Base Ruspini + 3 bases do repositório (bases numéricas de dimensões > 2).
+Executar 30 vezes nas mesmas condições iniciais e mesmo critério de parada
+Cálculo de performance: cálculo de quartis (box plot - ver matplotlib)
+Teste de NORMALIDADE: verificar se a base de dados foi amostrada com uma distribuição normal.
+Usar Wilcoxon signed rank para comparar os algoritmos (ver numpy/scipy). Dizer o que o teste de normalidade tem a ver com este item.
