@@ -1,41 +1,76 @@
 # encoding: utf-8
-import math
 from itertools import cycle
-from queue import PriorityQueue
-from dataset import load_dataset
+import sys, math, random
 import matplotlib.pyplot as plt
-
-media = lambda x: sum(x)/float(len(x))
+import numpy as np
+from dataset import load_dataset
 
 # euclidean distance
 ed = lambda p1,p2: math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
-#absolute standard deviation
-asd = lambda x: sum([abs(xi - media(x)) for xi in x])/float(len(x))
+class Cluster(object):
+    def __init__(self, pontos):
+        self.pontos =  pontos
+        self.centroide = self.calcula_centroide()
 
-#modified standard score (para normalização)
-def msd(x):
-    _asd = asd(x)
-    mu = media(x)
-    return [(xi - mu)/_asd for xi in x]
+    def __repr__(self):
+        return "<Cluster "+str(self.pontos)+">"
 
-dset = load_dataset('iris.data')
-x = msd(dset.T[0].astype(float))
-y = msd(dset.T[1].astype(float))
+    def update(self, pontos):
+        centroide_anterior = self.centroide
+        self.pontos = pontos 
+        self.centroide = self.calcula_centroide()
+        return ed(centroide_anterior, self.centroide)
 
-pontos = [(x[i], y[i]) for i in range(len(x))]
+    def calcula_centroide(self):
+        obtem_somatorio_coluna = lambda i: sum(p[i] for p in self.pontos)
+        coordenadas_centroide= [obtem_somatorio_coluna(i)/len(self.pontos) for i in range(len(self.pontos[0]))] 
+        return coordenadas_centroide
 
-clusters = PriorityQueue()
-for i, p1 in enumerate(pontos):
-    distancias = []
-    for j,p2 in enumerate(pontos):
-        distancia = (ed(p1,p2), p1, p2)
-        if i != j and distancia not in distancias:
-            distancias.append(distancia)
+def kmeans(pontos, num_classes, criterio_parada=0.5):
+    centroides_iniciais = random.sample(pontos, num_classes)
+    # cria os clusters com apenas um ponto aleatório para depois ajusta-lo
+    clusters = [Cluster([p]) for p in centroides_iniciais]
+    iteracoes = 0
+    while True:
+        iteracoes += 1
+        lists = [ [] for c in clusters]
+        for p in pontos:
+            menor_distancia = ed(p, clusters[0].centroide)
+            index = 0
+            for i in range(len(clusters[1:])):
+                distancia = ed(p, clusters[i+1].centroide)
+                if distancia < menor_distancia:
+                    menor_distancia = distancia 
+                    index = i+1
+            lists[index].append(p)
+        maior_mudanca = 0.0
+        for i in range(len(clusters)):
+            mudanca = clusters[i].update(lists[i])
+            maior_mudanca = max(maior_mudanca, mudanca)
+        if maior_mudanca < criterio_parada: 
+            print "parando depois de ", iteracoes, " iterações"
+            break
+    return clusters
 
-distancias.sort()
-ciclo_cores = cycle(['r', 'g', 'b', 'y',])
-ciclo_formas = cycle(['o', 'd', '*', '8', 's'])
+def cria_ponto_aleatorio(n, lower, upper):
+    return [random.uniform(lower, upper) for i in range(n)]
 
-[plt.plot([d[1][0], d[1][1]], [d[2][0], d[2][1]], ciclo_cores.next()) for d in distancias]
-plt.show()
+def main():
+    dataset = load_dataset('iris.data')
+    pontos = [[float(linha[0]), float(linha[1])] for linha in dataset]
+    num_classes, criterio_parada = 8, 0.01
+    clusters = kmeans(pontos, num_classes, criterio_parada)
+    
+    cores = ['r', 'g', 'b', 'y']
+    formas = ['o', '*', '^']
+    coresxformas = [c+f for f in formas for c in cores]
+
+    for i,c in enumerate(clusters): 
+        for p in c.pontos:
+            print "Cluster ",i, "Ponto ", p, " forma ", coresxformas[i]
+            plt.plot([p[0]], [p[1]], coresxformas[i])
+    plt.show()
+
+if __name__ == "__main__": 
+    main()
