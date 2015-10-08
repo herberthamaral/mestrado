@@ -1,0 +1,123 @@
+\documentclass[11pt]{article}
+\usepackage{mathtools}
+\usepackage{epsfig,psfrag}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[utf8]{inputenc}
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\selectlanguage{brazil}
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Mineração de dados $\bullet$ 2015}}
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%    TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Segunda Lista de Exercícios}} % Article title
+
+\author{
+\large
+\textsc{Herberth Amaral}\\[2mm]
+\normalsize Departamento de Ciência da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{herberthamaral@gmail.com}
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+\newpage
+
+\section*{Exercícios}
+
+\begin{enumerate}
+    \item{1} Objetivo
+    \item{2} Detalhamento
+        \begin{enumerate}
+            \item{2.1}
+                \begin{enumerate}
+                    \item{a} $G_1 = \{x_1,x_2,x_3\}; G_2 = \{x_1,x_2,x_3\}$
+                    \item{b} $C_1 = [2.00, 1.33], C_2=[5.00, 2.66]$
+                    \item{c} Testando com dois tipos de normalização (escore-z e minmax), nenhuma
+técnica fez com que o algoritmo de agrupamento apresentasse resultados
+diferentes. 
+
+Foram feitos testes com apenas uma iteração e com três iterações, com dados
+normalizados e não-normalizados, sempre com os mesmos resultados. Todos os
+testes foram executados  utilizando $C1 = (1,2)$ e $C2 = (4,2)$ como centróides
+iniciais.
+
+No entanto, por causa de discrepâncias nas escalas dados reais, torna-se
+necessário normalizar os dados antes dos agrupamentos. Especula-se que a
+não-diferença notada no dataset deste exemplo deve-se ao fato dos dois tipos de
+dados estarem na mesma escala.
+                    \item{d} Executando o algoritmo com dois critérios de parada (100 iterações e 0.5
+para movimentação de centróide), em todos os casos o critério de parada de
+movimentação de centróide foi o motivo de parada. Portanto pode-se dizer que o
+algoritmo estabilizou.
+                    \item{e} Uma possível interpretação é a classe social do cliente. Clientes com
+melhor condição financeira gastam mais com vestuário e tendem a gastar pelo menos
+a mesma quantia com alimentação. 
+                \end{enumerate}
+            \item{2.2}
+                \begin{enumerate}
+                    \item{a}
+                    \begin{verbatim}
+x2--
+    |-- 1.41
+x1--   | ------- 1.42
+x3-----         |
+x4 ---          | * - 3.20 
+      | -- 1.00 |
+x5 ---    | ---- 2.41
+x6 -------
+                    \end{verbatim}
+                    \item{b} O intervalo de corte fica entre os grupos $\{x1, x2, x3\}$ e $\{x4, x5, x6\}$, conforme indicado com $*$ na questão anterior.
+                \end{enumerate}
+        \end{enumerate}
+\end{enumerate}
+
+\end{document}
