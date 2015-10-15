@@ -26,8 +26,6 @@ def rastrigin(x):
     global DADOS_EXECUCAO
     global ITERACOES
     n = len(x)
-    if float('inf') in x or float('-inf') in x or gi(x) or hj(x):
-        return 1e5 #retorna um valor alto para penalizar
     valor = 10*n + sum([x[i]**2 - 10*cos(2*pi*x[i]) for i in range(n)])
     DADOS_EXECUCAO.append(valor)
     ITERACOES += 1
@@ -102,33 +100,33 @@ def es_testeiteracoes(n):
 
 def main():
     resultados_tempo = []
-    for i in range(10):
-        for dim in (3, ):
+    for i in range(100):
+        for dim in (3, 5, 10):
             #simulated annealing - critério de iteracoes
             resultado = anneal_testeiteracoes(dim)
             DADOS_EXECUCAO.append(rastrigin(resultado[0]))
             plt.plot(range(0, len(DADOS_EXECUCAO)), DADOS_EXECUCAO, 'r-')
-            plt.savefig('p1-sa-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
+            plt.savefig('p2-sa-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
             plt.clf()
 
             #differential evolution - critério de iteracoes
             resultado = de_testeiteracoes(dim)
             DADOS_EXECUCAO.append(rastrigin(resultado.x))
             plt.plot(range(0, len(DADOS_EXECUCAO[:1500])), DADOS_EXECUCAO[:1500], 'b-')
-            plt.savefig('p1-de-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
+            plt.savefig('p2-de-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
             plt.clf()
 
             # evolution strategy - critério de iterações
             resultado = es_testeiteracoes(dim)
-            plt.plot(range(len(resultado[1][:100])), resultado[1][:100], 'g-')
-            plt.savefig('p1-es-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3,'0')))
+            plt.plot(range(len(resultado[1])), resultado[1], 'g-')
+            plt.savefig('p2-es-ci-{}d-n{}.png'.format(dim, str(i+1).rjust(3,'0')))
             plt.clf()
 
             #simulated annealing - critério de tempo
             resultado = anneal_teste20s(dim)
             DADOS_EXECUCAO.append(rastrigin(resultado[0]))
             plt.plot(range(0, len(DADOS_EXECUCAO)), DADOS_EXECUCAO, 'r-')
-            plt.savefig('p1-sa-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
+            plt.savefig('p2-sa-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
             plt.clf()
             if dim == 3:
                 resultados_tempo.append(('sa', resultado[0]))
@@ -139,28 +137,28 @@ def main():
             plt.plot(range(0, len(DADOS_EXECUCAO[:1500])), DADOS_EXECUCAO[:1500], 'b-')
             if dim == 3:
                 resultados_tempo.append(('de', resultado.x))
-            plt.savefig('p1-de-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
+            plt.savefig('p2-de-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3, '0')))
             plt.clf()
 
             # evolution strategy - critério de tempo 
             resultado = es_teste20s(dim)
-            plt.plot(range(len(resultado[1][:100])), resultado[1][:100], 'g-')
-            plt.savefig('p1-es-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3,'0')))
+            plt.plot(range(len(resultado[1][:100])), resultado[1][:100])
+            plt.savefig('p2-es-ct-{}d-n{}.png'.format(dim, str(i+1).rjust(3,'0')))
             plt.clf()
             if dim == 3:
                 resultados_tempo.append(('es', resultado[0][2]))
 
-    media_de = np.mean([x[1] for x in resultados_tempo if x[0] == 'de'])
+    media_de = np.mean([abs(x[1]) for x in resultados_tempo if x[0] == 'de'])
     std_de = np.std([x[1] for x in resultados_tempo if x[0] == 'de'])
-    minimo_de = np.min([x[1] for x in resultados_tempo if x[0] == 'de'])
+    minimo_de = np.min([abs(x[1]) for x in resultados_tempo if x[0] == 'de'])
 
-    media_sa = np.mean([x[1] for x in resultados_tempo if x[0] == 'sa'])
+    media_sa = np.mean([abs(x[1]) for x in resultados_tempo if x[0] == 'sa'])
     std_sa = np.std([x[1] for x in resultados_tempo if x[0] == 'sa'])
-    minimo_sa = np.min([x[1] for x in resultados_tempo if x[0] == 'sa'])
+    minimo_sa = np.min([abs(x[1]) for x in resultados_tempo if x[0] == 'sa'])
 
-    media_es = np.mean([x[1] for x in resultados_tempo if x[0] == 'es'])
+    media_es = np.mean([abs(x[1]) for x in resultados_tempo if x[0] == 'es'])
     std_es = np.std([x[1] for x in resultados_tempo if x[0] == 'es'])
-    minimo_es = np.min([x[1] for x in resultados_tempo if x[0] == 'es'])
+    minimo_es = np.min([abs(x[1]) for x in resultados_tempo if x[0] == 'es'])
 
     print "DE: media:",media_de, " - desvio padrão: ",std_de, "- minimo: ", minimo_de
     print "SA: media:",media_sa, " - desvio padrão: ",std_sa, "- minimo: ", minimo_sa
