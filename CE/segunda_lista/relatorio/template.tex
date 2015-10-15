@@ -205,14 +205,19 @@ Para melhor visualização, as figuras abaixo contemplam a evolução do \textit{fit
 
 \subsection{Comparativo dos três algoritmos em vista do critério de tempo}
 
-Colocar aqui o comparativo dos três algoritmos
+Os resultados mostram a maior eficiência do algoritmo de evolução diferencial. Vale ressaltar que a convergência se dá muito antes do tempo completar, não sendo necessário um tempo de execução tão alto para seu caso (20 segundos).
 
-DE: media: 0.00331652884607  - desvio padrão:  0.0573481440193
-SA: media: 0.0208515758049  - desvio padrão:  1.37076793744
-ES: media: 2.31872287777  - desvio padrão:  1.44585421791
+\begin{table}[h]
+\centering
+\label{my-label}
+\begin{tabular}{lll}
+\multicolumn{1}{c}{\textbf{Algoritmo}} & \multicolumn{1}{c}{\textbf{Valor médio (DP)}} & \multicolumn{1}{c}{\textbf{Valor mínimo}} \\
+Recozimento simulado                   & 0.97 (1.21)                                   & 0.012                                     \\
+Estratégia evolutiva                   & 1.91 (1.094)                                  & 0.060                                     \\
+Evolução diferencial                   & 1.62e-09 (1.76e-09)                           & 3.17e-10                                 
+\end{tabular}
+\end{table}
 
-
-\section*{Referências}
 \begin{thebibliography}{10}
 \bibitem{es}
 BEYER, Hans-Georg (2007), \textit{Evolution strategies}. Disponível em \url{http://www.scholarpedia.org/article/Evolution_strategies}. Acessado em 14/10/2015.
