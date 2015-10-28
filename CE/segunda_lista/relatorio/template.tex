@@ -1,0 +1,227 @@
+\documentclass[11pt]{article}
+\usepackage{epsfig,psfrag}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{titlesec} % Allows customization of titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Computação Evolutiva $\bullet$ 2015}} 
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Relatório da segunda lista de exercícios}} % Article title
+
+\author{
+\large
+\textsc{Herberth Amaral}\\[2mm] % Your name
+\normalsize Departamento de Ciência da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{herberthamaral@gmail.com} % Your email address
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+\selectlanguage{brazil}
+
+\section{Introdução}
+
+Este trabalho contempla as análises feitas na segunda lista de exercícios da
+disciplina de Computação Evolutiva. Foram implementados e analisados três
+algoritmos evolutivos: recozimento simulado (\textit{simulated annealing - SA}),
+evolução diferencial (\textit{differential evolution - DE}) e estratégia
+evolutiva (\textit{evolution strategy - ES}) do tipo $\mu+\lambda$. Os testes foram
+executados com critérios de parada baseado em número de iterações e em tempo e
+utilizaram a função rastrigin (com e sem restrições e com 3, 5 e 10 dimensões)
+como \textit{benchmark}. Os resultados mostram que o algoritmo de evolução
+diferencial apresentou melhor performance que os demais.
+
+\section{Desenvolvimento}
+
+Os algoritmos foram implementados utilizando a linguagem de programação \textit{Python} e utilizando os parâmetros mostrados à seguir.
+\\
+\subsection{Todos os algoritmos:}
+\begin{enumerate}
+    \item \textbf{Critério de parada}: 10.000 iterações e 20 segundos de execução;
+    \item \textbf{Problema}: Rastrigin ($\underset{x}{argmin}(f(x)) = 10n + \sum\limits_{i=1}^n [x_i^2 - 10cos(2\pi x_i)] | -5.12 \leq x \leq 5.12$)com 3, 5 e 10 dimensões, com e sem restrições;
+    \item \textbf{Restrições}: $g_i(x) = sen(2\pi x_i) + 0.5 \leq 0, \forall i \in \{1, 2, ..., ng\}$ e $h_j(x) = sen(2\pi x_j) + 0.5 = 0, \forall j \in \{1, 2, ..., nh\}$ 
+    \item \textbf{Valores de $n$ (dimensões)}: 3, 5 e 10
+\end{enumerate}
+
+\subsection{Recozimento simulado:}
+
+\begin{enumerate}
+    \item \textbf{Temperaturas inicial e final:} $T_0 = 1e5, T_f = 1e-10$
+    \item \textbf{Taxa de aprendizado:} $\alpha = 0.995$
+\end{enumerate}
+
+\subsection{Evolução diferencial:}
+
+\begin{enumerate}
+    \item \textbf{População}: 20
+    \item \textbf{Recombinação}: 0.995
+\end{enumerate}
+
+\subsection{Estratégia evolutiva:}
+
+\begin{enumerate}
+    \item \textbf{$\mu$}: 20
+    \item \textbf{$\lambda$}: 5
+    \item \textbf{$\sigma_i$}: 20
+    \item \textbf{Operador de recombinação:\cite{es}} 
+    \begin{equation}
+        \forall l=1, \ldots, \lambda : \;\; \mathbf{a}_l \leftarrow \begin{cases} & \sigma_l \leftarrow \langle \sigma \rangle \mathrm{e}^{\tau \mathrm{N}_l(0,1)}, \\[2mm] & \mathbf{y}_l \leftarrow \langle \mathbf{y} \rangle + \sigma_l \mathbf{N}_l(\mathbf{0}, \mathbf{1}), \\[2mm] & F_l \leftarrow F(\mathbf{y}_l), \end{cases}
+    \end{equation}
+\end{enumerate}
+
+\section{Resultados}
+
+\subsection{Recozimento simulado}
+
+Foi possível observar que, diferentemente dos outros algoritmos, o recozimento simulado não apresenta uma "tendência de queda": inicia-se com um certo \textit{fitness} e logo após algumas iterações esse mesmo fitness piora para só depois voltar ao nível normal e finalmente ir abaixo dele. Isso pode ser explicado pelo fato que o algoritmo de recozimento simulado aceita e explora soluções piores quando a temperatura ainda está alta e passa a ter menos tolerância a resultados piores a medida que a temperatura decai. Tal evolução pode ser vista nas imagens abaixo:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-sa-ci-3d-n028.png}
+    \caption{Evolução do \textit{fitness} do algoritmo de recozimento simulado com $n=3$ com critério de parada por iterações}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-sa-ci-3d-n029.png}
+    \caption{Mais um exemplo de evolução do \textit{fitness} do algoritmo de recozimento simulado}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-sa-ci-3d-n006.png}
+    \caption{Mais um exemplo de evolução do \textit{fitness} do algoritmo de recozimento simulado}
+\end{figure}
+
+\clearpage
+
+\subsection{Evolução diferencial}
+
+Pelos gráficos foi possível observar que o algoritmo de evolução diferencial também explora bem seu espaço de busca, porém de forma diferente do recozimento simulado. Ao invés de ter uma tendência de alta para só depois baixar, o algoritmo apresenta uma tendência de baixa o tempo inteiro, mas com um alto desvio padrão por janela de tempo no início que diminui no final. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-de-ci-3d-n025.png}
+    \caption{Exemplo de evolução do \textit{fitness} do algoritmo de evolução diferencial \\
+            com critério de iterações para parada}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-de-ct-3d-n033.png}
+    \caption{Exemplo de evolução do \textit{fitness} do algoritmo de evolução diferencial \\
+            com critério de tempo para parada}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-de-ct-10d-n012.png}
+    \caption{Exemplo de evolução do \textit{fitness} do algoritmo de evolução diferencial \\
+            com critério de tempo para parada em 10 dimensões.}
+\end{figure}
+
+\clearpage
+\subsection{Estratégia evolutiva}
+
+Os algoritmos de estratégia evolutiva são os que menos exploraram o espaço de busca e tiveram uma convergência rápida (não necessariamente prematura). A convergência rápida pode ser explicada por causa das taxas de mutação baseadas no desvio padrão que decaem relativamente rápido. O algoritmo de estratégia evolutiva foi o único em que o critério de tempo não fez sentido por causa da convergência rápida. 
+
+Tentou-se inserir pertubações quando o desvio padrão das dez últimas iterações fosse zero. O espaço de busca foi melhor explorado, mas os resultados pioraram.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-es-ci-3d-n053.png}
+    \caption{Exemplo de evolução do \textit{fitness} do \\
+            algoritmo de estratégia evolutiva $\mu+\lambda$}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-es-ci-3d-n066.png}
+    \caption{Mais um exemplo de evolução do \textit{fitness} \\
+            do algoritmo de estratégia evolutiva $\mu+\lambda$}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{p1-es-ci-5d-n012.png}
+    \caption{Neste caso, o algoritmo ficou preso num mínimo local}
+\end{figure}
+
+Para melhor visualização, as figuras abaixo contemplam a evolução do \textit{fitness} somente das 100 primeiras iterações.
+
+\clearpage
+
+\subsection{Comparativo dos três algoritmos em vista do critério de tempo}
+
+Os resultados mostram a maior eficiência do algoritmo de evolução diferencial. Vale ressaltar que a convergência se dá muito antes do tempo completar, não sendo necessário um tempo de execução tão alto para seu caso (20 segundos).
+
+\begin{table}[h]
+\centering
+\label{my-label}
+\begin{tabular}{lll}
+\multicolumn{1}{c}{\textbf{Algoritmo}} & \multicolumn{1}{c}{\textbf{Valor médio (DP)}} & \multicolumn{1}{c}{\textbf{Valor mínimo}} \\
+Recozimento simulado                   & 0.97 (1.21)                                   & 0.012                                     \\
+Estratégia evolutiva                   & 1.91 (1.094)                                  & 0.060                                     \\
+Evolução diferencial                   & 1.62e-09 (1.76e-09)                           & 3.17e-10                                 
+\end{tabular}
+\end{table}
+
+\begin{thebibliography}{10}
+\bibitem{es}
+BEYER, Hans-Georg (2007), \textit{Evolution strategies}. Disponível em \url{http://www.scholarpedia.org/article/Evolution_strategies}. Acessado em 14/10/2015.
+\bibitem{de}
+    GUIMARÃES, Frederico Gadelha, \textit{Algoritmos de evoluçao diferencial para otimização e aprendizado de máquina}. Anais do IX Congresso Brasileiro de Redes Neurais/Inteligência Computacional (IX CBRN) - 2009. 
+\end{thebibliography}
+\end{document}
