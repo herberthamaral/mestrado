@@ -1,4 +1,5 @@
 # encoding: utf-8
+import os
 import sys
 import time
 import json
@@ -90,13 +91,7 @@ def test_function(kwargs):
     train_indexes = kwargs.pop('train_indexes')
     test_indexes =  kwargs.pop('test_indexes')
     classes_possiveis = kwargs['classes_possiveis']
-    """
-    Exemplo: 
-    test_function('svm.SVC', 'abalone.data', kftrain, kftest)
 
-    Retorno:
-    (1.2, 0.2, 0.94) => 1.2 segundos para treinar, 0.2 para testar e 94% de precisão
-    """
     function = load_function(function_path)
     dataset = load_dataset(dataset_file)
     num_linhas_dataset = len(dataset)
@@ -194,10 +189,17 @@ def merge_dados_resultado(resultado):
             merged.append(tmp)
     return merged
 
+def ultima_iteracao():
+    jsons = sorted([o for o in os.listdir('.') if o.endswith('.json')])
+    if jsons:
+        return int(jsons[-1].split('-')[1].split('.')[0])
+    return 0
+
 if __name__ == '__main__':
     trata_datasets()
     pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    for num_execucao in range(100):
+    inicio = ultima_iteracao()
+    for num_execucao in range(inicio, 100):
         list_args = []
         for dataset in DATASETS:
             N = len(load_dataset(dataset))
