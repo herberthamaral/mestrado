@@ -26,30 +26,17 @@ DATASETS = [
 ]
 
 FUNCOES = [
-    'sklearn.linear_model.LinearRegression',
-    'sklearn.linear_model.Ridge',
-    'sklearn.linear_model.RidgeCV',
-    'sklearn.linear_model.Lasso',
-    'sklearn.linear_model.ElasticNet',
-    #'sklearn.linear_model.MultiTaskLasso',
-    'sklearn.linear_model.Lars',
-    'sklearn.linear_model.LassoLars',
-    'sklearn.linear_model.OrthogonalMatchingPursuit',
-    'sklearn.linear_model.BayesianRidge',
     'sklearn.linear_model.SGDClassifier',
     'sklearn.linear_model.Perceptron',
     'sklearn.linear_model.PassiveAggressiveClassifier',
-    'sklearn.linear_model.TheilSenRegressor',
     'sklearn.lda.LDA',
     'sklearn.kernel_ridge.KernelRidge',
     'sklearn.svm.SVC',
-    #'sklearn.svm.NuSVC',
+    'sklearn.svm.NuSVC',
     'sklearn.svm.LinearSVC',
     'sklearn.linear_model.SGDClassifier',
     'sklearn.neighbors.RadiusNeighborsClassifier',
     'sklearn.neighbors.KNeighborsClassifier',
-    #'sklearn.gaussian_process.GaussianProcess', #Exception: Multiple input features cannot have the same target value.
-    'sklearn.kernel_ridge.KernelRidge',
     'sklearn.naive_bayes.GaussianNB',
     'sklearn.naive_bayes.MultinomialNB',
     'sklearn.naive_bayes.BernoulliNB',
@@ -102,6 +89,7 @@ def test_function(kwargs):
     dataset_file =  kwargs['dataset_file']
     train_indexes = kwargs.pop('train_indexes')
     test_indexes =  kwargs.pop('test_indexes')
+    classes_possiveis = kwargs['classes_possiveis']
     """
     Exemplo: 
     test_function('svm.SVC', 'abalone.data', kftrain, kftest)
@@ -139,7 +127,7 @@ def test_function(kwargs):
 
     t0 = time.time()
     erros = 0
-    classes_possiveis = sorted(list(set(y_teste)))
+    #classes_possiveis = sorted(list(set(y_teste)))
     matriz_confusao = [[0 for i in classes_possiveis] for j in classes_possiveis]
     if not erro:
         for i,xt in enumerate(x_teste):
@@ -177,29 +165,59 @@ def test_function(kwargs):
 
 def reporta_resultado(num_iteracao, resultado):
     filename = "iteracao-{num_iteracao}.json".format(num_iteracao=str(num_iteracao).rjust(3, '0'))
+    resultado = [dict(r) for r in resultado]
+    resultado = merge_dados_resultado(resultado)
     with open(filename, 'w') as f:
         f.write(json.dumps(resultado, indent=1))
+
+def merge_dados_resultado(resultado):
+    merged = []
+    for k,d in enumerate(DATASETS):
+        for i,f in enumerate(FUNCOES):
+            tmp = {}
+            for j in range(10):
+                indice = (k+1)*(i+1)+j
+                resultado_dict = dict(resultado[indice])
+                tmp['tteste'] = resultado_dict['tteste'] + tmp.get('tteste', 0)
+                tmp['ttreinamento'] = resultado_dict['ttreinamento'] + tmp.get('ttreinamento', 0)
+                tmp['dataset_file'] = resultado_dict['dataset_file']
+                tmp['function_path'] = resultado_dict['function_path']
+                matriz = np.array(resultado_dict['matriz_confusao'])
+                try:
+                    tmp['matriz_confusao'] = matriz + np.array(tmp['matriz_confusao']) if tmp.get('matriz_confusao', None) is not None else matriz
+                except:
+                    import pdb;pdb.set_trace()
+                tmp['matriz_confusao'] = [list(l) for l in tmp['matriz_confusao']]
+                tmp['num_erros'] = resultado_dict['num_erros'] + tmp['num_erros'] if tmp.get('num_erros') else resultado_dict['num_erros']
+                tmp['tamanho_dataset'] = resultado_dict['foldsize'] + tmp['tamanho_dataset'] if tmp.get('tamanho_dataset') else resultado_dict['foldsize']
+            tmp['precisao'] = (float(tmp['tamanho_dataset'])-tmp['num_erros'])/tmp['tamanho_dataset']
+            merged.append(tmp)
+    return merged
 
 if __name__ == '__main__':
     trata_datasets()
     pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    # tempo de execução até o 52: real540m43.727s
     for num_execucao in range(100):
         list_args = []
         for dataset in DATASETS:
             N = len(load_dataset(dataset))
             kf = list(KFold(n=N, n_folds=10))
+            classes_possiveis = sorted(list(set((load_dataset(dataset).T[-1]))))
             for funcao in FUNCOES:
                 for trainset, testset in kf:
-                    kwargs = dict(function_path=funcao, dataset_file=dataset, train_indexes=list(trainset), test_indexes=list(testset))
+                    kwargs = dict(function_path=funcao,
+                                  dataset_file=dataset,
+                                  train_indexes=list(trainset),
+                                  test_indexes=list(testset),
+                                  classes_possiveis=classes_possiveis)
                     list_args.append(kwargs.items())
-        #resultado = test_function(list_args[0])
 
         #resultado = []
-        #for l in list_args:
-        #    resultado.append(dict(test_function(l)))
-
+        #for args in list_args:
+        #    resultado.append(test_function(args))
+        #reporta_resultado(num_execucao, resultado)
         resultado = pool.map(test_function, list_args)
         resultado = [dict(r) for r in resultado]
         reporta_resultado(num_execucao, resultado)
         sys.stdout.write('.')
+        sys.stdout.flush()
