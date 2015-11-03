@@ -121,7 +121,6 @@ Os seguintes algoritmos foram avaliados:
     \item \textit{sklearn.naive\_bayes.BernoulliNB};
     \item \textit{sklearn.tree.DecisionTreeClassifier};
     \item \textit{sklearn.ensemble.GradientBoostingClassifier};
-    \item \textit{mlp.MLPClassifier} (implementação de terceiros, uma vez que o scikit não possui uma implementação de MLP).
 \end{enumerate}
 
 \subsection{Técnicas de implementação}
@@ -139,6 +138,12 @@ quantidade de subprocessos é determinada pela quantidade de processadores
 disponíveis no ambiente que o algoritmo é executado (4 subprocessos utilizando
 a máquina de testes descrita anteriormente).
 
+Além da execução paralela, duas pequenas otimizações foram feitas com o intuito
+de dimiuir o tempo de processamento. Duas técnicas foram utilizadas:
+\textit{lazy load} dos datasets e uma otimização do algoritmo \textit{minmax}
+em que reduzimos a complexidade de $O(n^2)$ para $O(n)$.
+
+
 Pelo mesmo motivo de tempo de execução apontado anteriormente, implementamos um
 mecanismo de retomada da execução do algoritmo de testes: a cada uma das cem
 iterações salvamos o estado da execução. O algoritmo continua a execução de
@@ -149,7 +154,8 @@ onde parou caso uma parada aconteça.
 Com exceção da base de dados \textit{banknot}, as bases de dados contêm
 atributos não-numéricos que precisam ser tratados antes. Esses atributos foram
 substituídos por valores inteiros com o intuito de permitir o uso nos
-classificadores.
+classificadores. Esse pré-processamento pode ser analisado no arquivo
+\textit{main.py} na função \textit{trata\_datasets()}.
 
 Além disso, todos os dados numéricos (exceto as classes) foram normalizados
 utilizando a técnica \textbf{minmax} ($minmax(X) = {x-Min(X)\over{Max(X)-Min(X)}}, \forall x \in X)$. 

@@ -21,9 +21,9 @@ def minmax_array(x):
     return [minmax(xi, maxx, minx) for xi in x]
 
 DATASETS = [
+    'banknote.data',
     'abalone.data',
     'car.data',
-    'banknote.data',
 ]
 
 FUNCOES = [
@@ -43,7 +43,6 @@ FUNCOES = [
     'sklearn.naive_bayes.BernoulliNB',
     'sklearn.tree.DecisionTreeClassifier',
     'sklearn.ensemble.GradientBoostingClassifier',
-    'mlp.MLPClassifier',
 ]
 
 def trata_datasets():
@@ -167,11 +166,11 @@ def reporta_resultado(num_iteracao, resultado):
 
 def merge_dados_resultado(resultado):
     merged = []
+    indice = 0
     for k,d in enumerate(DATASETS):
         for i,f in enumerate(FUNCOES):
             tmp = {}
             for j in range(10):
-                indice = (k+1)*(i+1)+j
                 resultado_dict = dict(resultado[indice])
                 tmp['tteste'] = resultado_dict['tteste'] + tmp.get('tteste', 0)
                 tmp['ttreinamento'] = resultado_dict['ttreinamento'] + tmp.get('ttreinamento', 0)
@@ -185,8 +184,10 @@ def merge_dados_resultado(resultado):
                 tmp['matriz_confusao'] = [list(l) for l in tmp['matriz_confusao']]
                 tmp['num_erros'] = resultado_dict['num_erros'] + tmp['num_erros'] if tmp.get('num_erros') else resultado_dict['num_erros']
                 tmp['tamanho_dataset'] = resultado_dict['foldsize'] + tmp['tamanho_dataset'] if tmp.get('tamanho_dataset') else resultado_dict['foldsize']
+                indice += 1
             tmp['precisao'] = (float(tmp['tamanho_dataset'])-tmp['num_erros'])/tmp['tamanho_dataset']
             merged.append(tmp)
+    print len(resultado), indice
     return merged
 
 def ultima_iteracao():
