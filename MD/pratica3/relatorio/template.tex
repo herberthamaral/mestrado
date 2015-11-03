@@ -163,6 +163,37 @@ O minmax normaliza os dados no intervalo $[0,1]$ e isso é especialmente
 interessante para os classificadores Bayesianos, os quais não aceitam entradas
 negativas.
 
+\subsection{Execução e pós-processamento}
+
+Com 16 algoritmos de classificação, três datasets e validação cruzada 10-fold,
+cada iteração demora cerca de seis minutos com a configuração detalhada
+anteriormente. Como executamos cem iterações, a execução total do nosso
+algoritmo ficou em cerca de dez horas.
+
+A implementação de recursos de paralelismo ajudou a diminuir o tempo de
+execução, porém, notamos que boa parte do tempo é gasta sintetizando os
+resultados do teste, o que usa apenas um processador. Fazendo uma analogia com
+o modelo de programação MapReduce (colocar referência), uma quantidade
+significativa de tempo foi gasta na fase de redução, porém uma boa fatia de
+tempo foi economizada na fase de mapeamento.
+
+Salvamos um arquivo com os dados produzidos pelo nosso algoritmo no formato
+JSON a cada iteração. Esse arquivo contém as seguintes informações:
+
+\begin{enumerate}
+    \item Tamanho do dataset;
+    \item Tempo (em segundos) usado para treinamento;
+    \item Tempo (em segundos) usado para validação;
+    \item Precisão (no intervalo $[0..1]$) do modelo;
+    \item Quantidade de erros de validação;
+    \item \textit{Datset} utilizado;
+    \item Algoritmo de classificação utilizado;
+    \item Matriz de confusão;
+\end{enumerate}
+
+Para facilitar a análise dos dados, desenvolvemos um utlitário para unificar os
+arquivos JSON e converte-los para CSV (com exceção da matriz de confusão).
+
 \section{Resultados}
 \section{Considerações finais}
 \section{Referências}
