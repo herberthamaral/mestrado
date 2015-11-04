@@ -35,7 +35,6 @@ FUNCOES = [
     'sklearn.svm.SVC',
     'sklearn.svm.NuSVC',
     'sklearn.svm.LinearSVC',
-    'sklearn.linear_model.SGDClassifier',
     'sklearn.neighbors.RadiusNeighborsClassifier',
     'sklearn.neighbors.KNeighborsClassifier',
     'sklearn.naive_bayes.GaussianNB',

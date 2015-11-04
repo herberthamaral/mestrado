@@ -16,9 +16,14 @@ for i in range(100):
             DADOS.append(d)
 
 # converte para CSV
-csv = ','.join(DADOS[0].keys())+'\n'
+csv_header = ','.join(DADOS[0].keys())+'\n'
+csv_content = {}
 for d in DADOS:
-    csv += ','.join([str(v) for v  in d.values()])+'\n'
+    key = d['dataset_file']+'-'+d['function_path']
+    if key not in csv_content:
+        csv_content[key] = csv_header
+    csv_content[key] += ','.join([str(v) for v  in d.values()])+'\n'
 
-with open('dados.csv', 'w') as f:
-    f.write(csv)
+for key,value in csv_content.items():
+    with open(key+'.csv', 'w') as f:
+        f.write(value)
