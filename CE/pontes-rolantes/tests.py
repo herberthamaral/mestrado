@@ -1,6 +1,6 @@
 # encoding: utf-8
 from statemachine import (Convertedor, OrdemServico, LingotamentoConvencional,
-                          LingotamentoContinuo, Ponte, FornoPanela, Aciaria)
+                          LingotamentoContinuo, Ponte, FornoPanela, Aciaria, Transicao)
 
 def test_convertedor_deve_contar_ticks():
     estagio = Convertedor()
@@ -45,9 +45,9 @@ def test_lingotamento_continuo_deve_apresentar_tempo_correto_dependendo_da_os():
     assert lco.tempo_total() == 75
 
 def test_ponte_deve_poder_executar_trabalho():
-    ponte = Ponte()
     os = OrdemServico()
     convertedor = Convertedor()
+    ponte = Ponte(convertedor)
     convertedor.add_os(os)
     convertedor.tick(38)
     forno_panela = FornoPanela()
@@ -67,5 +67,31 @@ def test_estagio_deve_rejeitar_pedido_de_os_pronta_em_progresso():
     except RuntimeError:
         pass
 
-def test_deve_ser_possivel_executar_transicoes_na_fila():
-    aciaria = Aciaria()
+def test_deve_ser_possivel_executar_transicoes():
+    os = OrdemServico('A')
+    transicao = Transicao(os=os, origem=None, destino='CV', ponte=None)
+    cv = Convertedor()
+    transicao.add_estagio('CV', cv)
+    transicao.tick(15)
+    assert transicao.concluida
+    assert transicao.estagios['CV'][0].status == 'trabalhando'
+
+def test_deve_ser_possivel_executar_transicoes_com_pontes():
+    os = OrdemServico('A')
+    transicao = Transicao(os=os, origem=None, destino='CV', ponte=None)
+    cv = Convertedor()
+    fp = FornoPanela()
+    transicao.add_estagio('CV', cv)
+    transicao.tick(15)
+    pontea, ponteb, pontec = Ponte(cv), Ponte(cv), Ponte(fp)
+    transicao = Transicao(os=os, origem='CV', destino='FP', ponte=pontea)
+    transicao.add_estagio('CV', cv)
+    transicao.add_estagio('FP', fp)
+    cv.tick(38)
+    transicao.add_ponte(pontea)
+    transicao.add_ponte(ponteb)
+    transicao.add_ponte(pontec)
+    transicao.tick(15)
+    assert transicao.concluida
+    assert transicao.estagios['CV'][0].status == 'pronto'
+    assert pontea.localizacao == fp
