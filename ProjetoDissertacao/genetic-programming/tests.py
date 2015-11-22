@@ -1,4 +1,4 @@
-from gp import execute, gen_random_tree
+from gp import execute, gen_random_tree, replace_element
 
 def test_funcao_vazia_retorna_none():
     ftree = []
@@ -41,3 +41,10 @@ def test_mult_sum():
 def test_gen_random_tree_pode_gerar_arvores_validas():
     tree = gen_random_tree(range(1,5))
     execute(tree)
+
+def test_replace_element1():
+    tree = ['+', ['-', 1, 2], ['+', 3, 4]]
+    expected_tree = ['+', ['-', 1, 2], ['*', 5, 6]]
+    subtree = ['*', 5, 6]
+    actual_tree = replace_element(2, tree, subtree)
+    assert  actual_tree == expected_tree
