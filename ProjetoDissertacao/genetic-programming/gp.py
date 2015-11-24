@@ -30,9 +30,9 @@ def execute(ftree, kwargs={}):
 def gen_random_tree(args):
     if len(args) == 1:
         return args[0]
+    tree = [random.choice(fmap.keys())]
     if random.random() > 0.5:
         args.append(random.uniform(1,9))
-    tree = [random.choice(fmap.keys())]
     left = gen_random_tree(args[:len(args)/2])
     right = gen_random_tree(args[:len(args)/2])
     leafes = [left, right]
@@ -64,8 +64,10 @@ def fitness(individuo):
                     evidencias[attr] = get_evidencia(linha1, linha2, attr)
             try:
                 resultado = execute(ftree, evidencias)
-            except:
+            except Exception, e:
+                import pdb;pdb.set_trace()
                 resultado = 0
+                print "Erro ao calcular o fitness", str(e)
             if mesmo_registro(linha1, linha2):
                 if resultado <= 0.95:
                     falso_negativo += 1
@@ -81,6 +83,7 @@ def fitness(individuo):
         recall = verdadeiro_positivo/float(verdadeiro_positivo+falso_negativo)
         f1 = (2*precisao*recall)/(precisao+recall)
     except ZeroDivisionError:
+        print 'zde'
         f1 = 0
     print datetime.datetime.now(), f1
     return dict(tree=ftree, fitness=f1)
@@ -216,4 +219,4 @@ def pg(multi=True):
         print u'\nMelhor indivíduo:', pop[0]['tree']
 
 if __name__=='__main__':
-    pg(multi=True)
+    pg(multi=False)
