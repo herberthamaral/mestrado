@@ -34,7 +34,9 @@ def gen_random_tree(args):
     if random.random() > 0.5:
         args.append(random.uniform(1,9))
     left = gen_random_tree(args[:len(args)/2])
-    right = gen_random_tree(args[:len(args)/2])
+    right = gen_random_tree(args[:len(args)/2]]
+    if None in left or None in right:
+        import pdb;pdb.set_trace()
     leafes = [left, right]
     random.shuffle(leafes)
     tree.extend(leafes)
