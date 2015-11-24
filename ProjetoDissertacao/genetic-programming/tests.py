@@ -1,5 +1,5 @@
 import sys
-from gp import execute, gen_random_tree, replace_element_bfs, plain, get_element_by_pos
+from gp import execute, gen_random_tree, replace_element_bfs, plain, get_element_by_pos, optimize_tree, poda
 
 def test_funcao_vazia_retorna_none():
     ftree = []
@@ -52,3 +52,19 @@ def test_plain():
 def test_get_element_by_pos():
     tree = ['+', ['-', 5, 6], ['*', ['+', 1, 2], 4]]
     assert get_element_by_pos(tree, 5) == ['+', 1, 2]
+
+def test_optimize_tree():
+    tree = ['-', ['*', 'given_name', 'given_name'], ['*', 'given_name', 'given_name']]
+    assert optimize_tree(tree) == 0
+
+def test_optimize_tree_recursively():
+    tree = ['+', ['-', ['*', 'given_name', 'given_name'], ['*', 'given_name', 'given_name']], 4]
+    assert optimize_tree(tree) == ['+', 0,  4]
+
+def test_optimize_tree_recursively_x2():
+    tree = ['+', ['-', ['*', 'given_name', 'given_name'], ['*', 'given_name', 'given_name']], 4]
+    assert optimize_tree(optimize_tree(tree)) == 4
+
+def test_poda():
+    individuo = {'tree': ['+', ['-', ['*', 'given_name', 'given_name'], ['*', 'given_name', 'given_name']], 4], 'fitness': None}
+    assert  poda(individuo) == {'tree': 4, 'fitness': None}

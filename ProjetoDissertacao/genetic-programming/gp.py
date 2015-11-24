@@ -1,8 +1,10 @@
 # encoding: utf-8
 import sys
+import time
 import copy
 import random
 import datetime
+import json
 import multiprocessing
 from jellyfish import jaro_winkler
 
@@ -27,16 +29,23 @@ def execute(ftree, kwargs={}):
     fargs = [execute(arg, kwargs) for arg in ftree[1:]]
     return fmap[f](*fargs)
 
+def optimize_tree(tree):
+    if type(tree) != list:
+        return tree
+    if tree[0] == '-' and tree[1] == tree[2]:
+        return 0
+    if tree[0] == '+' and 0 in tree[1:]:
+        return tree[1] if tree[1] !=0 else tree[2]
+    return [tree[0], optimize_tree(tree[1]), optimize_tree(tree[2])]
+
 def gen_random_tree(args):
     if len(args) == 1:
         return args[0]
     tree = [random.choice(fmap.keys())]
-    if random.random() > 0.5:
+    if random.random() > 0.8:
         args.append(random.uniform(1,9))
-    left = gen_random_tree(args[:len(args)/2])
-    right = gen_random_tree(args[:len(args)/2]]
-    if None in left or None in right:
-        import pdb;pdb.set_trace()
+    left = gen_random_tree(args[len(args)/2:])
+    right = gen_random_tree(args[:len(args)/2])
     leafes = [left, right]
     random.shuffle(leafes)
     tree.extend(leafes)
@@ -67,9 +76,7 @@ def fitness(individuo):
             try:
                 resultado = execute(ftree, evidencias)
             except Exception, e:
-                import pdb;pdb.set_trace()
                 resultado = 0
-                print "Erro ao calcular o fitness", str(e)
             if mesmo_registro(linha1, linha2):
                 if resultado <= 0.95:
                     falso_negativo += 1
@@ -85,7 +92,6 @@ def fitness(individuo):
         recall = verdadeiro_positivo/float(verdadeiro_positivo+falso_negativo)
         f1 = (2*precisao*recall)/(precisao+recall)
     except ZeroDivisionError:
-        print 'zde'
         f1 = 0
     print datetime.datetime.now(), f1
     return dict(tree=ftree, fitness=f1)
@@ -98,10 +104,15 @@ def mesmo_registro(reg1, reg2):
 
 def mutate_tree(tree, attrs):
     rattrs = random.sample(attrs, random.randint(1, random.randint(1,len(attrs)/2)))
-    random.shuffle(rattrs)
-    random_subtree = gen_random_tree(rattrs)
+    random_subtree = 0
+    while random_subtree == 0:
+        random.shuffle(rattrs)
+        random_subtree = gen_random_tree(rattrs)
+        random_subtree = poda({'tree':random_subtree, 'fitness': None})['tree']
+
     element_to_replace = random.randint(1, len(attrs))
     replace_element_bfs(element_to_replace, tree, random_subtree)
+    print u'sub-árvore de mutação:', random_subtree
     return tree
 
 def replace_element_bfs(element_num, tree, random_subtree):
@@ -125,10 +136,12 @@ def crossover(pares):
     for par in pares:
         tree1, tree2 = par
         tree1, tree2 = tree1['tree'], tree2['tree']
-        ponto_corte1 = random.randint(1, len(plain(tree1)))
-        ponto_corte2 = random.randint(1, len(plain(tree2)))
-        subtree1 = get_element_by_pos(tree1 , ponto_corte1)
-        subtree2 = get_element_by_pos(tree2, ponto_corte2)
+        subtree1, subtree2 = None, None
+        while not all([subtree1, subtree2]):
+            ponto_corte1 = random.randint(1, len(plain(tree1)))
+            ponto_corte2 = random.randint(1, len(plain(tree2)))
+            subtree1 = get_element_by_pos(tree1 , ponto_corte1)
+            subtree2 = get_element_by_pos(tree2, ponto_corte2)
         filho1 = copy.deepcopy(tree1)
         filho2 = copy.deepcopy(tree2)
         replace_element_bfs(ponto_corte1, filho1, subtree2)
@@ -164,8 +177,7 @@ def get_element_by_pos(tree, pos):
 
 def selecao_pais(pop, qtd_pares=6):
     pares = []
-    pop = sorted(pop)
-    pop = pop[::-1]
+    pop = sorted(pop)[::-1]
     sum_fitness = float(sum([i['fitness'] for i in pop]))
     prob_acumulada = 0
     while len(pares) != qtd_pares:
@@ -181,20 +193,27 @@ def selecao_pais(pop, qtd_pares=6):
     return pares
 
 
-def init_pop(qtd, attrs, multi):
+def init_pop(qtd, attrs, multi, calc_fitness=True):
+    if qtd <= 0:
+        return []
+    print "Inicializando {} novos individuos".format(qtd)
     individuos = [{'tree': gen_random_tree(attrs), 'fitness': None} for i in range(qtd)]
-    individuos = calcula_fitness_pop(individuos, multi)
+    if calc_fitness:
+        individuos = calcula_fitness_pop(individuos, multi)
     return individuos
 
+POOL = None #evita leak de processos
+
 def calcula_fitness_pop(individuos, multi=True):
+    global POOL
     a_calcular = []
     for individuo in individuos:
         if individuo['fitness'] is None:
             a_calcular.append(individuo)
     individuos = [i for i in individuos if i['fitness'] is not None]
-    if multi:
-        pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        individuos.extend(pool.map(fitness, a_calcular))
+    if multi and not POOL:
+        POOL = multiprocessing.Pool(multiprocessing.cpu_count())
+        individuos.extend(POOL.map(fitness, a_calcular))
     else:
         individuos.extend([fitness(a) for a in a_calcular])
     individuos = sorted(individuos)
@@ -207,18 +226,38 @@ def mutacao(pop, attrs, taxa=0.2):
             p['fitness'] = None
     return pop
 
-def pg(multi=True):
+def poda(individuo):
+    podado = []
+    individuo['tree'] = optimize_tree(individuo['tree'])
+    while podado != individuo['tree']:
+        podado = copy.copy(individuo['tree'])
+        individuo['tree'] = optimize_tree(individuo['tree'])
+    return individuo
+
+def salva_resultado_arquivo(pop, geracao, ts):
+    filename = 'exec-{ts}-geracao-{geracao}.json'.format(**locals())
+    with open(filename, 'w') as f:
+        f.write(json.dumps(pop))
+
+def pg(multi=True, qtd_populacao=60):
+    ts = int(time.time())
     attrs=['given_name','surname','street_number','address_1','address_2','suburb','postcode','state','date_of_birth','soc_sec_id']
-    pop = init_pop(60, attrs, multi)
+    pop = init_pop(qtd_populacao, attrs, multi)
     for i in range(20):
         pais = selecao_pais(pop)
         filhos = crossover(pais)
         filhos = mutacao(filhos, attrs)
         pop.extend(filhos)
+        pop = [poda(p) for p in pop]
         pop = calcula_fitness_pop(pop, multi)
-        pop = sorted(pop)[::-1][:12]
-        print u'\nMelhor fitness da geração {}: {}'.format(i+1, pop[0]['fitness'])
+        unique_individuals = []
+        [unique_individuals.append(p) for p in pop if p not in unique_individuals] # não dá para usar set() aqui - listas não são hasheáveis
+        pop.extend(init_pop(qtd_populacao-len(pop), attrs, multi))
+        pop = calcula_fitness_pop(pop, multi)
+        pop = sorted(pop)[::-1][:qtd_populacao]
+        print u'\nMelhor fitness da geração ',(i+1), pop[0]['fitness']
         print u'\nMelhor indivíduo:', pop[0]['tree']
+        salva_resultado_arquivo(pop, i, ts)
 
 if __name__=='__main__':
-    pg(multi=False)
+    pg(multi=True)
