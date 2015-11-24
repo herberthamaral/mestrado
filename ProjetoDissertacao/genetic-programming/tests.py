@@ -1,4 +1,5 @@
-from gp import execute, gen_random_tree, replace_element
+import sys
+from gp import execute, gen_random_tree, replace_element_bfs, plain, get_element_by_pos
 
 def test_funcao_vazia_retorna_none():
     ftree = []
@@ -17,15 +18,11 @@ def test_funcao_sum():
     ftree = ['+', 1, 2]
     assert execute(ftree) == 3
 
-def test_sum_profundidade_2():
+def test_sum_profundidade_1():
     ftree = ['+', ['+', 2,3], 2]
     assert execute(ftree) == 7
 
 def test_sum_profundidade_2():
-    ftree = ['+', ['+', 2,3], 2]
-    assert execute(ftree) == 7
-
-def test_sum_profundidade_3():
     ftree = ['+', ['+', 2,3], ['-', 5, ['*', 2, 3]]]
     assert execute(ftree) == 4
 
@@ -42,9 +39,16 @@ def test_gen_random_tree_pode_gerar_arvores_validas():
     tree = gen_random_tree(range(1,5))
     execute(tree)
 
-def test_replace_element1():
-    tree = ['+', ['-', 1, 2], ['+', 3, 4]]
-    expected_tree = ['+', ['-', 1, 2], ['*', 5, 6]]
-    subtree = ['*', 5, 6]
-    actual_tree = replace_element(2, tree, subtree)
-    assert  actual_tree == expected_tree
+def test_bfs():
+    tree = ['+', ['-', 5, 6], ['*', ['+', 1, 2], 4]]
+    replace_element_bfs(5, tree, ['-', 1, 1])
+    expected_tree = ['+', ['-', 5, 6], ['*', ['-', 1, 1], 4]]
+    assert tree == expected_tree
+
+def test_plain():
+    tree = ['+', ['-', 5, 6], ['*', ['+', 1, 2], 4]]
+    assert plain(tree) == ['+', '-', 5, 6, '*', '+', 1, 2, 4]
+
+def test_get_element_by_pos():
+    tree = ['+', ['-', 5, 6], ['*', ['+', 1, 2], 4]]
+    assert get_element_by_pos(tree, 5) == ['+', 1, 2]
