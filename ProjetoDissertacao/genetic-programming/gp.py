@@ -36,6 +36,8 @@ def optimize_tree(tree):
         return 0
     if tree[0] == '+' and 0 in tree[1:]:
         return tree[1] if tree[1] !=0 else tree[2]
+    if all([type(t) == float for t in tree[1:]]):
+        return execute(tree)
     return [tree[0], optimize_tree(tree[1]), optimize_tree(tree[2])]
 
 def gen_random_tree(args):
@@ -211,8 +213,9 @@ def calcula_fitness_pop(individuos, multi=True):
         if individuo['fitness'] is None:
             a_calcular.append(individuo)
     individuos = [i for i in individuos if i['fitness'] is not None]
-    if multi and not POOL:
-        POOL = multiprocessing.Pool(multiprocessing.cpu_count())
+    if multi:
+        if not POOL:
+            POOL = multiprocessing.Pool(multiprocessing.cpu_count())
         individuos.extend(POOL.map(fitness, a_calcular))
     else:
         individuos.extend([fitness(a) for a in a_calcular])
@@ -248,13 +251,13 @@ def pg(multi=True, qtd_populacao=60):
         filhos = crossover(pais)
         filhos = mutacao(filhos, attrs)
         pop.extend(filhos)
-        pop = [poda(p) for p in pop]
         pop = calcula_fitness_pop(pop, multi)
         unique_individuals = []
         [unique_individuals.append(p) for p in pop if p not in unique_individuals] # não dá para usar set() aqui - listas não são hasheáveis
         pop.extend(init_pop(qtd_populacao-len(pop), attrs, multi))
         pop = calcula_fitness_pop(pop, multi)
         pop = sorted(pop)[::-1][:qtd_populacao]
+        pop = [poda(p) for p in pop]
         print u'\nMelhor fitness da geração ',(i+1), pop[0]['fitness']
         print u'\nMelhor indivíduo:', pop[0]['tree']
         salva_resultado_arquivo(pop, i, ts)
