@@ -67,10 +67,10 @@ def fitness(individuo):
     verdadeiro_negativo = 0
     falso_positivo = 0
     falso_negativo = 0
-    for linha1 in DATASET:
-        for linha2 in DATASET:
-            if linha1 == linha2:
-                continue
+    ldataset = len(DATASET)
+    for l1 in xrange(ldataset):
+        for l2 in xrange(l1+1, ldataset):
+            linha1, linha2 = DATASET[l1], DATASET[l2]
             evidencias = {}
             for attr in linha1.keys():
                 if attr != 'rec_id':
@@ -243,24 +243,25 @@ def salva_resultado_arquivo(pop, geracao, ts):
         f.write(json.dumps(pop))
 
 def pg(multi=True, qtd_populacao=60):
-    ts = int(time.time())
     attrs=['given_name','surname','street_number','address_1','address_2','suburb','postcode','state','date_of_birth','soc_sec_id']
-    pop = init_pop(qtd_populacao, attrs, multi)
-    for i in range(20):
-        pais = selecao_pais(pop)
-        filhos = crossover(pais)
-        filhos = mutacao(filhos, attrs)
-        pop.extend(filhos)
-        pop = calcula_fitness_pop(pop, multi)
-        unique_individuals = []
-        [unique_individuals.append(p) for p in pop if p not in unique_individuals] # não dá para usar set() aqui - listas não são hasheáveis
-        pop.extend(init_pop(qtd_populacao-len(pop), attrs, multi))
-        pop = calcula_fitness_pop(pop, multi)
-        pop = sorted(pop)[::-1][:qtd_populacao]
-        pop = [poda(p) for p in pop]
-        print u'\nMelhor fitness da geração ',(i+1), pop[0]['fitness']
-        print u'\nMelhor indivíduo:', pop[0]['tree']
-        salva_resultado_arquivo(pop, i, ts)
+    for ex in range(30):
+        print u"Inicializando geração ",ex+1
+        pop = init_pop(qtd_populacao, attrs, multi)
+        for i in range(20):
+            pais = selecao_pais(pop)
+            filhos = crossover(pais)
+            filhos = mutacao(filhos, attrs)
+            pop.extend(filhos)
+            pop = calcula_fitness_pop(pop, multi)
+            unique_individuals = []
+            [unique_individuals.append(p) for p in pop if p not in unique_individuals] # não dá para usar set() aqui - listas não são hasheáveis
+            pop.extend(init_pop(qtd_populacao-len(pop), attrs, multi))
+            pop = calcula_fitness_pop(pop, multi)
+            pop = sorted(pop)[::-1][:qtd_populacao]
+            pop = [poda(p) for p in pop]
+            print u'\nMelhor fitness da geração ',(i+1), pop[0]['fitness']
+            print u'\nMelhor indivíduo:', pop[0]['tree']
+            salva_resultado_arquivo(pop, i, str(ex).rjust(2, '0'))
 
 if __name__=='__main__':
     pg(multi=True)

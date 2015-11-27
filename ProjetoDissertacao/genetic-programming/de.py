@@ -6,7 +6,6 @@ import random
 import datetime
 import json
 import multiprocessing
-import numpy as np
 from jellyfish import jaro_winkler
 
 DATASET = []
@@ -22,8 +21,9 @@ def fitness(individuo):
     verdadeiro_negativo = 0
     falso_positivo = 0
     falso_negativo = 0
-    for linha1 in DATASET:
-        for linha2 in DATASET:
+    for l1 in xrange(len(DATASET)):
+        for l2 in range(l1+1, len(DATASET)):
+            linha1, linha2 = DATASET[l1], DATASET[l2]
             if linha1 == linha2:
                 continue
             resultado = calc_score(linha1, linha2, individuo)
@@ -71,7 +71,7 @@ Representação do indivíduo:
 """
 
 def init_pop(qtd, attrs, multi, calc_fitness=True):
-    pop = [{'individuo': np.array([random.uniform(0,2) for a in attrs]), 'fitness':None} for i in range(qtd)]
+    pop = [{'individuo': [random.uniform(0,2) for a in attrs], 'fitness':None} for i in range(qtd)]
     if calc_fitness:
         return calcula_fitness_pop(pop, multi)
     return pop
