@@ -5,157 +5,184 @@
 \usepackage[numberedbib]{apacite}
 \usepackage[utf8]{inputenc}
 \usepackage{mathabx}
+\usepackage{tabularx}
+\usepackage{lipsum}
+\usepackage{multicol}
 
-\title{Apresentação de artigo: A Genetic Programming Approach to Record Deduplication}
+\newcommand\Fontvi{\fontsize{7}{7.2}\selectfont}
+
+
+\title{Uma abordagem evolutiva ao problema de record linkage}
 \date{\today}
-\author{Herberth Amaral}
+\author{Acadêmico: Herberth Amaral \\
+Orientador: Prof. Dr. Renê Rodrigues Veloso}
 \institute{Programa de Pós-Graduação em Modelagem Computacional e Sistemas - UNIMONTES}
 \begin{document}
   \maketitle
 
-  \section{Introdução}
+  \section{Problema}
 
-  \begin{frame}{Record linkage}
-      \textit{Record linkage} (RL) é o processo de encontrar registros duplicados que representam a mesma entidade em um ou mais conjuntos de dados \cite{survey}.
-
-      Faz parte das tarefas de \textit{data cleaning} dos processos de mineração de dados.
+  \begin{frame}{Problema}
+      \begin{itemize}
+          \item Instituições com diferentes softwares para diferentes problemas;
+          \item Várias bases de dados;
+          \item Registros duplicados entre bases de dados;
+      \end{itemize}
   \end{frame}
 
-  \section{Teoria de RL}
-
-  \begin{frame}{Modelagem matemática}
-      Modelo desenvolvido por \cite{fellegi69}. Foi a primeira tentativa bem sucedida de criar um modelo matemático para RL.
-
-      Compreende três decisões: \textit{link} ($A_1$), \textit{non-link} ($A_3$) e \textit{potential link} ($A_2$). 
-
-  \end{frame}
-
-  \begin{frame}{Modelagem matemática}
-      Considere dois \textit{datasets}, $A$ e $B$. Vamos assumir que alguns elementos são comuns entre $A$ e $B$. Consequentemente a união dos dois conjuntos disjuntos é:
-      \begin{center}
-          $A \bigtimes B = \{(a,b); a \in A, b \in B\}$
-      \end{center}
-      E os conjuntos que chamamos de \textit{matched} e \textit{unmatched} são respectivamente:
-      \begin{center}
-          $M = \{(a,b); a=b, a \in A, b \in B\}$ \\
-          $U = \{(a,b); a \neq b, a \in A, b \in B\}$
-      \end{center}
-
-  \end{frame}
-  \begin{frame}{Modelagem matemática}
-      Para o processo de record linkage, cada par de tuplas $(a,b)$ precisa ser comparado atributo-por-atributo. Então, o \textit{vetor de comparações} dos registros $\alpha(a), \beta(b)$ pode ser definido como:
-      \begin{center}
-          $\gamma[\alpha(a),\beta(b)] = \{\gamma^1[\alpha(a), \beta(b)],\cdots, \gamma^k[\alpha(a), \beta(b)]\}$
-      \end{center}
-      $\gamma$ é uma função em $A \bigtimes B$ e o conjunto de todos os possíveis $\gamma(\alpha(a),\beta(b))$ compõe o espaço de busca $\Gamma$.
-  \end{frame}
-
-  \begin{frame}{Modelagem matemática}
-      Para sabermos se $(a,b)$ realmente são a mesma entidade (ou seja, $(a,b) \in M$), precisamos definir uma \textit{regra de ligação} que mapeia $\Gamma$ em um conjunto aleatório de funções de decisão $D = \{d(\gamma)\}$ em que
-      \begin{center}
-          $d(\gamma) = \{P(A_1|\gamma), P(A_2|\gamma), P(A_3|\gamma)\}; \gamma \in \Gamma$ \\
-          $\sum\limits_{i=1}^3 P(A_i|\gamma) = 1$
-      \end{center}
-      Ou seja, para cada valor observado de $\gamma$, a regra de ligação associa as possibilidades de \textit{link} ($A_1$), \textit{potential link} ($A_2$) e \textit{non-link} ($A_3$).
-  \end{frame}
-
-  \begin{frame}{Modelagem matemática}
-      Uma regra de ligação ótima minimiza $P(A_2|\gamma) \forall \gamma \in \Gamma$. Dependendo dos datasets A e B, a regra de ligação ótima pode ser difícil de se obter. Sendo a regra de ligação uma \textbf{função}, podemos \textbf{evolui-la} através de um processo conhecido como \textbf{programação genética}.
-  \end{frame}
-
-  \begin{frame}{Programação genética}
-      Programação evolucionária é baseada em idéias inspiradas do processo que influencia virtualmente todos os seres vivos, a \textit{seleção natural} \cite{geneticrl}.
-
-      Programação gentética (GP) é uma das técnicas mais conhecidas dentro da programação evolucionária. Pode ser visto como uma heurística adaptativa em que as idéias básicas vem das propriedades das operações genéticas e seleção natural.
-
-      A principal diferença entre GP e outras técnicas evolucionárias é que GPs representam o conceito do problema como um programa de computador. Ou seja, cada indivíduo é uma \textbf{\textit{função}}, representado como uma \textbf{\textit{árvore}}.
-  \end{frame}
-  \begin{frame}{Programação genética - algoritmo básico}
-      \begin{enumerate}
-          \item Inicialize a população;
-          \item Avalia todos os indivíduos, associando uma nota (\textit{fitness}) a cada um;
-          \item Execute o último passo se o critério de parada for atingido. Do contrário, continue;
-          \item \textbf{Selecione} os melhores $n$ indivíduos para a próxima geração;
-          \item Aplique os operadores de \textbf{cruzamento} e \textbf{mutação} para obter $m$ novos indivíduos;
-          \item Substitua a população atual pela população gerada ao passo 2;
-          \item Apresente o melhor indivíduo na população como saída do processo evolucionário.
-      \end{enumerate}
-  \end{frame}
-  \begin{frame}{Programação genética - Operadores}
-      Programação genética, assim como demais algoritmos evolucionários, possuem métodos para representar o procsso evolutivo:
-      \begin{enumerate}
-          \item Seleção;
-          \item Cruzamento;
-          \item Mutação;
-      \end{enumerate}
-  \end{frame}
-
-  \begin{frame}{Programação genética - Seleção}
-      É a operação que copia os indivíduos sem os modificar. Geralmente é feito com uma estratégia elitista, que mantém os melhores indivíduos para a próxima geração.
-  \end{frame}
-
-  \begin{frame}{Programação genética - Cruzamento}
-      Permite que material genético (ou seja, sub-árvores) seja trocado entre dois pais em um processo que pode gerar um ou mais filhos. Os filhos são o resultado da troca das sub-árvores selecionadas entre os pais, conforme ilustrado na figura \ref{fig:crossover}.
+  \begin{frame}{Exemplo de duplicação de registros em uma instituição de saúde}
       \begin{figure}
           \centering
-          \includegraphics[width=0.4\textwidth]{crossover.png}
-          \caption{Cruzamento entre árvores \cite{geneticrl}}
-          \label{fig:crossover}
+          \includegraphics[width=1.0\textwidth]{hospital.jpg}
+          \caption{Diferentes sistemas dentro de um hospital \cite{hospital}}
       \end{figure}
   \end{frame}
 
-  \begin{frame}{Programação genética - Cruzamento}
-      Permite que material genético (ou seja, sub-árvores) seja trocado entre dois pais em um processo que pode gerar um ou mais filhos. Os filhos são o resultado da troca das sub-árvores selecionadas entre os pais, conforme ilustrado na figura \ref{fig:crossover}.
+  \begin{frame}{Problemas com registros duplicados}
+      Os principais problemas com registros duplicados/distribuídos em uma instituição de saúde são:
+
+      \begin{itemize}
+          \item Impossibilidade de unificação de prontuários de forma confiável;
+          \item Dificuldades de comunicação entre diferentes setores (ex: farmácia e financeiro);
+          \item Erros de diagnóstico;
+          \item Falta de confiança em processos informatizados.
+      \end{itemize}
+  \end{frame}
+
+  \section{Record linkage}
+
+  \begin{frame}{Introdução à RL}
+      \begin{itemize}
+          \item \textit{Record linkage} (RL) é o processo de identificação de registros duplicados que representam a mesma entidade em um ou mais bases de dados \cite{survey};
+          \item Permite a unificação de dados a partir de um ponto em comum (ex: paciente).
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}{Processo de RL}
       \begin{figure}
           \centering
-          \includegraphics[width=0.4\textwidth]{crossover.png}
-          \caption{Cruzamento entre árvores \cite{geneticrl}}
-          \label{fig:crossover}
+          \includegraphics[width=0.9\textwidth]{rlprocess.png}
+          \caption{Processo de record linkage \cite{survey}}
       \end{figure}
   \end{frame}
 
-  \begin{frame}{Programação genética - Mutação}
-      O operador de mutação possui o papel de aumentar a diversidade e, assim, fazer com que o PG explore melhor seu espaço de busca. Todos os indivíduos tem uma chance fixa de sofrer mutação. Numa árvore GP, um nó aleatório é selecionado e a sub-árvore correspondente é trocada por uma aleatoriamente criada, conforme ilustrado na figura \ref{fig:mutacao}.
-      \begin{figure}
+  \begin{frame}{Funções de similaridade para comparação de registros}
+      \begin{table}
           \centering
-          \includegraphics[width=0.4\textwidth]{mutacao.png}
-          \caption{Mutação de sub-árvore \cite{geneticrl}}
-          \label{fig:mutacao}
-      \end{figure}
+          \caption{Algumas funções de similaridade \cite{survey}}
+          \begin{tabularx}{\textwidth}{|l|X|}
+              \hline
+              Função                    & Observação \\ \hline
+              Jaro                      & Principalmente para primeiros e últimos nomes. Retorna um valor no intervalo $[0,1]$ em que 0 é diferente e 1 é igual. \\ \hline
+              Jaro-Winkler              & Baseado na Jaro. Dá mais pesos à prefixos. \\ \hline
+              Levenshtein               & Número de edições entre duas strings. 0 significa que são iguais\\ \hline
+              Similaridade de cosenos   & Intervalo $[-1, 1]$. Muito utilizado em busca em textos. \\ \hline
+          \end{tabularx}
+      \end{table}
   \end{frame}
 
-  \section{Modelando o problema de record linkage com programação genética}
+  \begin{frame}{Breve exemplo}
+      Considere dois bancos de dados de exemplo:
+      \Fontvi
+      \begin{multicols}{2}
+          \begin{table}[]
+              \centering
+              \caption{Banco de dados A}
+              \begin{tabular}{|l|l|l|l|}
+                  \hline
+                  ID & Nome  & Sobrenome & Nascimento \\ \hline
+                  1  & Luís  & Silva     & 1990-05-01 \\
+                  2  & Marco & Túlio     & 1978-03-14 \\ \hline
+              \end{tabular}
+          \end{table}
+          \columnbreak
+          \begin{table}[]
+              \centering
+              \caption{Banco de dados B}
+              \begin{tabular}{|l|l|l|l|}
+                  \hline
+                  ID & Nome   & Sobrenome & Nascimento \\ \hline
+                  1  & Luiz   & Silva     & 1990-01-05 \\
+                  2  & Marcos & Tulio     & 1978-03-14 \\
+                  3  & Pedro  & Ferreira  & 1989-10-21 \\ \hline
+              \end{tabular}
+          \end{table}
+      \end{multicols}
 
-  \begin{frame}{Modelagem de RL com GP}
-      A função que os autores evoluem tomam como parâmetro um conjunto de \textit{evidências}, em que cada evidência $E$ é um par $<atributo, func. similaridade>$. 
-
-      Por exemplo, suponha que queiramos deduplicar uma base em que cada instância tenha os atributos nome, sobrenome e endereço. Usando uma função de similaridade (ex. Jaro), podemos ter a seguinte lista de similaridades: $(E_1<nome, Jaro>, E_2<sobrenome, Jaro>, E_3<endereco, Jaro>)$.
-
-      Uma função de similaridade simples seria a combinação linear das evidências, como por exemplo $F_s(E_1, E_2, E_3) = E_1+E_2+E_3$.
+      \textbf{Problema:} Como descobrir as duplicatas?
   \end{frame}
 
-  \begin{frame}{Modelagem de RL com GP}
-      Na modelagem cada evidência é colocada numa folha da árvore. Cada folha pode também ser um número real aleatório entre 1.0 e 9.0, que é escolhido quando a árvore é gerada.
+  \begin{frame}{Comparação campo-a-campo}
+      \begin{table}[]
+          \centering
+          \caption{Comparação entre dois registros das bases de dados (depois da limpeza)}
+          \label{tbl:comparacao}
+          \begin{tabular}{|l|l|l|l|}
+              \hline
+              Função de comparação             & Nome & Sobrenome & Nascimento \\ \hline
+              Jaro                             & luiz & silva     & 1990-05-01 \\
+              Jaro                             & luis & silva     & 1990-01-05 \\ \hline
+              \textbf{Resultado da comparação} & 0.83 & 1         & 0.96       \\ \hline
+          \end{tabular}
+      \end{table}
 
-      A saída da função é um valor numérico que servirá para dizer se os registros representados pelas evidências são os mesmos ou não. Para isso é adotado um limiar e todas os pares cujo os valores são acima desse limiar são consideradas como um \textit{match}.
+      Chamaremos de $E$ o vetor resultante da comparação.
+  \end{frame}
+  \begin{frame}{Regra de ligação (classificação)}
+      Função que associa o vetor de comparação $E$ com a probabilidade do par de registros pertencerem a uma mesma entidade.
 
-      A função de \textit{fitness} utilizada na evolução da árvore é o F1-score, que combina duas métricas bem utilizadas: revocação (\textit{recall}) e precisão e é definida da seguinte forma:
+      \textbf{Exemplo:} \[
+          F_s(E) = \begin{cases}
+              1  &  \text{if }\dfrac{\sum \limits_{e \in E} e}{|E|} \geq 0.95 \\
+              0  &  \text{otherwise} \\
+          \end{cases}
+      \]
 
+      \textbf{Problema:} infelizmente, nem sempre a regra de ligação é tão simples.
+  \end{frame}
+
+  \section{Objetivos}
+  \begin{frame}{Objetivo geral}
+      Desenvolver um algoritmo de programação genética capaz de criar regras de
+      ligação de registros com o intuito de aumentar a eficiência do processo de \textit{record linkage}.
+  \end{frame}
+  \begin{frame}{Objetivos específicos}
+      \begin{itemize}
+          \item Um algoritmo de programação genética eficiente do ponto de vista de melhores ajustes de regras de ligação;
+          \item Adaptações dos operadores de programação genética capazes de permitir o uso de evolução diferencial;
+          \item Extensões de algoritmos para comparação de pares de registros em meio a dados faltantes.
+      \end{itemize}
+  \end{frame}
+
+  \section{Referência: A Genetic Programming Approach to Record Deduplication (Carvalho, 2012)}
+
+  \begin{frame}{Modelagem de RL com GP - Linhas gerais}
+
+      \textbf{Objetivo:} Evolução de uma função de similaridade $F_s: E \mapsto [0,1]$.
+
+      \textbf{Parâmetros}: conjunto de \textit{evidências}, em que cada evidência $E$ é um par $(atributo, func. similaridade)$, exemplo:
       \begin{center}
-          $P = \frac{NumeroDeDuplicatasCorretamenteIdentificadas}{NumeroDeParesIdentificados}$ \\
-          $R = \frac{NumeroDeDuplicatasCorretamenteIdentificadas}{NumeroVerdadeiroDeParesDuplicados}$ \\
-          $F1 = \frac{2PR}{P+R}$ \\
+      $E = \{(nome, Jaro), (sobrenome, Jaro), (endereco, Jaro)\}$.
+      \end{center}
+
+      \textbf{Exemplo de função de similaridade:}
+      \begin{center}
+          $F_s(E) = \dfrac{\sum \limits_{e \in E} e}{|E|}$
       \end{center}
   \end{frame}
 
-  \section{Experimentos}
+  \begin{frame}{Função objetivo}
+      A função de \textit{fitness} utilizada na evolução da árvore é o F1-score, assim definida:
+
+      \begin{center}
+          $P = \dfrac{V_p}{V_p+F_p}$ \\
+          $R = \dfrac{V_p}{V_p+F_n}$ \\
+          $F1 = 2*\dfrac{PR}{P+R}$ \\
+      \end{center}
+      Em que: $V_p$ são os verdadeiros-positivos, $F_p$ são os falsos-positivos e $F_n$ são os falsos-negativos.
+  \end{frame}
 
   \begin{frame}{Experimentos}
-      \begin{enumerate}
-          \item O GP foi usado para encontrar a melhor combinação das evidências, com evidências manualmente selecionadas. Essa estratégia é comum em outros trabalhos relacionados.
-          \item O GP foi usado para encontrar a melhor combinação das evidências, com evidências automaticamente selecionadas
-      \end{enumerate}
-
       Os datasets utilizados foram:
       \begin{enumerate}
           \item \textbf{Cora bibliographic} - uma coleção de citações - 1295 instâncias. \textbf{Atributos}: \textit{author names, year, title, venue, pages} e \textit{other info}.
@@ -164,18 +191,8 @@
       \end{enumerate}
   \end{frame}
 
-  \begin{frame}{Experimentos - Configuração do GP}
-
-      \begin{figure}
-          \centering
-          \includegraphics[width=0.75\textwidth]{parametrosga.png}
-          \caption{Parâmetros do GP\cite{geneticrl}}
-          \label{fig:param}
-      \end{figure}
-  \end{frame}
-
   \begin{frame}{Experimentos - evidência manualmente selecionadas}
-      A imagen \ref{fig:tbl1} mostram os resultados dos testes executados.
+      A imagem \ref{fig:tbl1} mostra os resultados dos testes executados.
       \begin{figure}
           \centering
           \includegraphics[width=0.75\textwidth]{resultados-manuais.png}
@@ -184,28 +201,50 @@
       \end{figure}
   \end{frame}
 
-  \begin{frame}{Experimentos - evidências automaticamente selecionadas}
+  \begin{frame}{Discussão dos resultados}
+      \begin{itemize}
+          \item Uso de uma abordagem $O(n^2)$;
+          \item Bases de dados pequenas (máximo de 1295 registros);
+          \item Alto tempo de treinamento.
+      \end{itemize}
+  \end{frame}
+
+  \section{Oportunidades de pesquisa}
+  \begin{frame}{Oportunidades de pesquisa}
+      \Fontvi
+      \begin{itemize}
+          \item Inserção de parâmetros de índice para diminuição do espaço de busca;
+          \item Modelagem multi-objetivo do problema de record linkage;
+          \item Adaptação da função Jaro-Winkler para o contexto local;
+          \item Evolução diferencial para programação genética;
+          \item Uso de técnicas de evolução gramatical \cite{grammatical-evolution} para o problema de record linkage;
+          \item Modelagem do problema de record linkage para algoritmos genéticos.
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}{Cronograma}
       \begin{figure}
           \centering
-          \includegraphics[width=0.9\textwidth]{resultados-automaticos.png}
-          \caption{Resultados com evidências automaticamente selecionadas \cite{geneticrl}}
-          \label{fig:resultados-automaticos}
+          \includegraphics[width=0.9\textwidth]{cronograma.png}
       \end{figure}
   \end{frame}
 
-  \begin{frame}{Experimentos - tempos de treinamento e validação para o dataset sintético}
-      \begin{figure}
-          \centering
-          \includegraphics[width=0.9\textwidth]{tempos.png}
-          \caption{Tempos de treinamento e validação para o dataset sintético \cite{geneticrl}}
-          \label{fig:tempos}
-      \end{figure}
+  \section{Perguntas}
+  \section{Muito obrigado!}
+  \begin{frame}{Códigos}
+      Os códigos dos experimentos feitos até agora estão disponibilizados em \url{https://github.com/herberthamaral/mestrado/tree/master/ProjetoDissertacao}.
   \end{frame}
 
+  %\begin{frame}{Modelagem utilizando evolução diferencial}
+  %    Abordagem similar à abordagem GP, mas com a seguinte função de similaridade:
+  %    \begin{center}
+  %        $F_s(E,W) = \sum\limits_{e \in E,w \in W} e*w ; |E| = |W|$
+  %    \end{center}
+  %\end{frame}
 
-  \section{Referências}
-      \begin{frame}{Referências}
-          \bibliographystyle{apacite}
-          \bibliography{apresentacao}
-      \end{frame}
+
+  \begin{frame}
+      \bibliographystyle{apacite}
+      \bibliography{apresentacao}
+  \end{frame}
 \end{document}

@@ -1,0 +1,10 @@
+\beamer@endinputifotherversion {3.24pt}
+\select@language {brazil}
+\beamer@sectionintoc {1}{Problema}{2}{0}{1}
+\beamer@sectionintoc {2}{Record linkage}{6}{0}{2}
+\beamer@sectionintoc {3}{Objetivos}{13}{0}{3}
+\beamer@sectionintoc {4}{Refer\IeC {\^e}ncia: A Genetic Programming Approach to Record Deduplication (Carvalho, 2012)}{16}{0}{4}
+\beamer@sectionintoc {5}{Oportunidades de pesquisa}{22}{0}{5}
+\beamer@sectionintoc {6}{Perguntas}{25}{0}{6}
+\beamer@sectionintoc {7}{Muito obrigado!}{26}{0}{7}
+\beamer@sectionintoc {8}{Refer\^encias}{28}{0}{8}
