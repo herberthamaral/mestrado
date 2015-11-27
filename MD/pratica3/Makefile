@@ -5,7 +5,7 @@ download_datasets:
 	wget http://archive.ics.uci.edu/ml/machine-learning-databases/00267/data_banknote_authentication.txt -O banknote.data
 setup:
 	sudo apt-get install python-numpy python-scipy -y
-	sudo pip install sklearn --upgrade
+	sudo pip install scikit-learn==0.16.1 --upgrade
 run:
 	make setup
 	make download_datasets

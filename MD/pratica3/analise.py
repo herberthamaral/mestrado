@@ -58,3 +58,5 @@ def calc_mediana():
                 d1 = np.array([i[atributo] for i in DADOS if i['dataset_file'] == dataset and i['function_path'] == f1])
                 d2 = np.array([i[atributo] for i in DADOS if i['dataset_file'] == dataset and i['function_path'] == f2])
                 print ','.join([str(s) for s in [dataset,atributo,f1,f2,np.median(d1),np.median(d2)]])
+
+print teste_normalidade('precisao')

@@ -73,19 +73,64 @@
 \newpage
 
 \section{Introdução}
-\section{Objetivos}
+    A tarefa de avaliar o desempenho de diferentes algoritmos de classificação na área de Mineração de Dados e Aprendizagem de Máquina (Machine Learning) vêm sendo discutida nos últimos anos, devido a principalmente à falta de validade estatística dos resultados. Em  \cite{Demsar2006}\cite{Garciaetal2008}\cite{Salzberg1997} são discutidos as principais falhas no ponto de vista de análise estatística dos resultados como o uso incorreto de testes paramétricos \emph{t-pareado (comparação pareada de resultados)}  e sugere o uso de testes não paramétricos como \emph{Wilcoxon Signed Rank Test (comparação pareada)} 
+    
+    No presente trabalho iremos utilizar 15 algoritmos de classificação do \cite{scikitlearn} em três data sets e iremos obter o desempenho médio da acurácia (taxa de acerto)  de cada algoritmo em um data set, depois será gerado um rank do desempenho dos mesmos em cada dataset. Tal rank não possui grande confiabilidade estatística, pois apenas a média não permite inferir nada sobre as distribuições dos dados. Sendo assim, iremos utilizar testes não-paramétricos para avaliar o desempenho dos 2 algoritmos campeões em um data set, no caso , o teste \emph{Wilcoxon Signed Rank},  um teste não paramétrico, onde dois classificadores são comparados entre si de forma pareada, com o objetivo de verificar a hipótese nula de que o desempenho dos dois são equivalentes, a hipótese alternativa de que o desempenho de um é melhor do que do outro.
+  
+\subsection{Objetivos}
 
 Os objetivos deste trabalho são:
 
 \begin{enumerate}
     \item Explorar opções de algoritmos de classificação;
     \item Analisar o desempenho desses algoritmos segundo critérios de precisão, tempo de treinamento e de execução.
+    \item Utilizar testes estatísticos não paramétricos para avaliação de desempenho de classificadores em situações de um problema e em casos de multi-problemas.   
 \end{enumerate}
 
 \section{Metodologia}
 
-Falar que usamos validação cruzada com 10-fold.
+\subsection{Data sets}
+Para o desenvolvimento desse trabalho foram escolhidos 3 data sets do repositório da UCI para Machine Learning \cite{uci}, sendo elas : Abalone\cite{abalone} Bank Note Authentication \cite{banknote} Car Evaluation \cite{cardata}, respectivamente com múltiplas classes (28 classes diferentes, sendo bastante desbalanceada),duas classes balanceadas, e um com 4 classes balanceadas).
 
+A escolha das bases foi feita com o objetivo testar o desempenho dos algoritmos de classificação com relação a variação do número de classes disponíveis nas bases.
+
+\subsection{Algoritmos}  
+ A lista de algoritmos utilizados neste trabalho estão disponíveis no scikit-learn\cite{scikitlearn},foram estão selecionados 15 de diversos tipos (probabilísticos,árvores de decisão, modelos lineares,e outros).
+ \begin{enumerate}
+    \item \textit{sklearn.linear\_model.SGDClassifier};
+    \item \textit{sklearn.linear\_model.Perceptron};
+    \item \textit{sklearn.linear\_model.PassiveAggressiveClassifier};
+    \item \textit{sklearn.lda.LDA};
+    \item \textit{sklearn.kernel\_ridge.KernelRidge};
+    \item \textit{sklearn.svm.SVC};
+    \item \textit{sklearn.svm.NuSVC};
+    \item \textit{sklearn.svm.LinearSVC};
+    \item \textit{sklearn.neighbors.RadiusNeighborsClassifier};
+    \item \textit{sklearn.neighbors.KNeighborsClassifier};
+    \item \textit{sklearn.naive\_bayes.GaussianNB};
+    \item \textit{sklearn.naive\_bayes.MultinomialNB};
+    \item \textit{sklearn.naive\_bayes.BernoulliNB};
+    \item \textit{sklearn.tree.DecisionTreeClassifier};
+    \item \textit{sklearn.ensemble.GradientBoostingClassifier};
+ \end{enumerate}      
+
+\subsection{Descrição do Ambiente de Experimento}
+ A implementação dos algoritmos será a padrão disponível no módulo sklearn \cite{scikitlearn}. Os data sets passaram por uma fase de pré-processamento e normalização para se ajustar a alguns algoritmos. 
+ 
+ Para as fases de treinamento, teste e validação , foi utilizada a estratégia de validação cruzada ou \emph(cross validation) utilizando a técnica \emph{k-fold} no caso especificamente o 10-fold , onde foram gerados 10 folds, que corresponde a utilizar 1 fold para a teste e outros 9 para treinamento , equivalente a treinar com 90\% dos dados e testar em 10\%. Para melhor variância dos dados no processo de treinamento e teste cada algoritmo será executado 100 vezes em cada amostra de um data set.
+ 
+ Um arquivo irá armazenar a métrica de desempenho do classificador (acurácia) e outras métricas ( tempos de treinamento e teste,etc).Cada linha desse arquivo representa os resultados do algoritmo em uma interação.    
+  
+\subsection{Análise de Desempenho}
+
+ Os algoritmos serão rankeados pelo seu desempenho médio da acurácia em cada data set, com média e desvio padrão. Para justificar o uso de testes não paramétricos , iremos verificar se de fato os resultados obtidos são de uma distribuição normal ou não, para isso serão utilizados os testes de normalidades citados no artigo \cite{Garciaetal2008} , como o \emph{Kolmogorov-Smirnov} implementado em Python como 
+ \emph{kstest} \cite{scipy} e outros testes que garantem ou não o uso seguro de testes paramétricos.
+ 
+ Como os dados obtidos não seguem todos os critérios de normalidade, serão utilizados testes não paramétricos, que não pressupõem nenhuma informação a respeito de qual distribuição os dados são, assim podemos utilizá-los para avaliar o desempenho dos dados de forma estatisticamente válida.
+ 
+ Utilizaremos na comparação os testes de Wilcoxon Signed Rank, para teste pareado para identificar o melhor algoritmo dentre os dois melhores colocados no rank realizado inicialmente, como o objetivo de verificar e validar se de fato o desempenho entre um deles é estatisticamente superior ao do outro. Os dois melhores em um data set serão comparados.
+      
+     
 \section{Desenvolvimento}
 
 O presente trabalho foi desenvolvido na linguagem Python 2 e seu respectivo
@@ -95,15 +140,16 @@ código (com as devidas instruções de execução) pode ser encontrado no ender
 Ferramentas auxiliares foram utilizadas no desenvolvimento deste trabalho:
 
 \begin{enumerate}
-    \item Numpy;
-    \item Scikit-learn (colocar referências);
+    \item Numpy \cite{numpy};
+    \item Scikit-learn \cite{scikitlearn};
+    \item Scipy \cite{scipy}
 \end{enumerate}
 
 Todos os testes foram executados em um Intel Core i5 de segunda geração (2
 processadores, 4 \textit{threads}) com 6GB de RAM.
 
 Os seguintes algoritmos foram avaliados:
-
+\label{listaalgoritmos}
 \begin{enumerate}
     \item \textit{sklearn.linear\_model.SGDClassifier};
     \item \textit{sklearn.linear\_model.Perceptron};
@@ -113,7 +159,6 @@ Os seguintes algoritmos foram avaliados:
     \item \textit{sklearn.svm.SVC};
     \item \textit{sklearn.svm.NuSVC};
     \item \textit{sklearn.svm.LinearSVC};
-    \item \textit{sklearn.linear\_model.SGDClassifier};
     \item \textit{sklearn.neighbors.RadiusNeighborsClassifier};
     \item \textit{sklearn.neighbors.KNeighborsClassifier};
     \item \textit{sklearn.naive\_bayes.GaussianNB};
@@ -194,11 +239,175 @@ JSON a cada iteração. Esse arquivo contém as seguintes informações:
 Para facilitar a análise dos dados, desenvolvemos um utlitário para unificar os
 arquivos JSON e converte-los para CSV (com exceção da matriz de confusão).
 
-\section{Resultados}
+\section{Resultados Preliminares}
+    Nas tabelas \ref{RankAbalone},\ref{RankBank} e \ref{RankCar} estão os resultados dos algoritmos nos data sets \emph{Abalone, Bank Note Authentication e Car Evaluation} respectivamente. Como pode ser notado na Tabela 1, o desempenho de todos os algoritmos foram relativamente baixos na base \emph{Abalone}. Esse resultado foi de certa forma esperado uma vez que a base não foi discretizada durante a fase de pré-processamento, então foram mantida as características de 28 classes e as mesmas não são balanceadas e a maioria delas possuem apenas 1 elemento por classe o que dificulta a tarefa de classificação dos algoritmos.
+    
+    Alguns algoritmos apresentaram desempenho praticamente determinístico com pouco ou até nenhuma diferença de desempenho nas 100 execuções realizadas sobre essa base (Tabela 1), com exceções do \emph{LinearSVC,Gradient Boosting,SGD,Decision Tree, Passive Aggressive} que apresentaram uma variação da taxa de acúracia durante o experimento.
+    
+    Como o objetivo deste trabalho é verificar e comparar o desempenho dos algoritmos no ambiente de teste, não será discutido os detalhes de porquê um determinado algoritmo obteve ac{\'u}r{\'a}cia maior que outro. Detalhes como: se o problema ( data set ) é linearmente separável ou não, ou como internamente um algorítmo trata conjuntos densos ou esparços , ou ainda, qual a técnica utilizada para classificação múltipla interna do algoritmo está fora do escopo desse trabalho.
+    
+    Antes de realizar os testes estatísticos de comparação de desempenho, foi feito testes de normalidade e de heteroscidacidade (equivalência de variância) nos resultados dos algorítmos para que se verificasse a possibilidade de uso de testes paramétricos de forma segura , como sugerido por \cite{Garciaetal2008}. Os testes a serem utilizados foram os de Dagostino-Pearson para normalidade e o de Levene para heteroscidacidade citados \cite{Garciaetal2008} e disponíveis no pacote scipy.stats \cite{scipy} como \emph{normaltest} e outros e \emph{levene} respectivamente .
+    
+    Os testes avaliarão a normalidade ou não dos dados da variável precisão (acurácia) obtida nas 100 execuções de cada algorítmo em cada data set. Durante a análise foi verificado que a maioria dos algoritmos apresentou falha nos testes de normalidade em todos os três data sets, cerca de 26 dos 45 testes deram não normal .( 3 bases x 15 algoritmos em cada)  
+    
+\label{RankAbalone}
+\begin{table}[h]
+\centering
+\caption{Rank do Desempenho dos Algoritmos no Data Set Abalone}
+\begin{tabular}{r|l|r}
+Posição & Algoritmo & Acur{\'a}cia M{\'e}dia e Desvio Padr{\~a}o\\
+\hline
+1 & LDA & 0.2523 $+/-$ 0.0000 \\
+2 & LinearSVC & 0.2360 $+/-$ 0.0001 \\
+3 & Gradient Boosting & 0.2299 $+/-$ 0.0001 \\
+4 & KNN & 0.2298 $+/-$ 0.0000 \\
+5 & SVC & 0.2212 $+/-$ 0.0000 \\
+6 & Decision Tree & 0.1975 $+/-$ 0.0001 \\
+7 & MultinomialNB & 0.1877 $+/-$ 0.0000 \\
+8 & Kernel Ridge & 0.1853 $+/-$ 0.0000 \\
+9 & Radius Neighbors & 0.1841 $+/-$ 0.0000 \\
+10 & BernoulliNB & 0.1779 $+/-$ 0.0000 \\
+11 & Perceptron & 0.1592 $+/-$ 0.0000 \\
+12 & SGD & 0.1866 $+/-$ 0.0159\\
+13 & Passive Aggressive  & 0.1523 $+/-$ 0.0146\\
+14 & GaussianNB & 0.1877 $+/-$ 0.0000 \\
+15 & NuSVC & 0.0000 $+/-$ 0.0000 \\
+\end{tabular}
+\end{table}
+\label{RankBank}
+\begin{table}[p]
+\caption{Rank do Desempenho dos Algoritmos no Data Set Bank Note Authentication}
+\centering
+\begin{tabular}{r|l|r}
+Posição & Algoritmo & Acur{\'a}cia M{\'e}dia e Desvio Padr{\~a}o\\
+\hline
+1 & KNN & 0.9315 $+/-$ 0.0000 \\
+2 & Decision Tree & 0.9006 $+/-$ 0.0021 \\
+3 & Gradient Boosting & 0.8976 $+/-$ 0.0004 \\
+4 & SVC & 0.8535 $+/-$ 0.0000 \\
+5 & Perceptron & 0.8513 $+/-$ 0.0000 \\
+6 & NuSVC & 0.8506 $+/-$ 0.0000 \\
+7 & LDA & 0.8484 $+/-$ 0.0000 \\
+8 & LinearSVC & 0.8448 $+/-$ 0.0000 \\
+9 & Kernel Ridge & 0.8163 $+/-$ 0.0000 \\
+9.5 & Passive Aggressive & 0.7908 $+/-$ 0.0501 \\
+9.5 & SGD & 0.7908 $+/-$ 0.0465 \\
+12 & GaussianNB & 0.7179 $+/-$ 0.0159\\
+13 & BernoulliNB  & 0.6778 $+/-$ 0.0000\\
+14 & MultinomialNB & 0.6596 $+/-$ 0.0000 \\
+15 & Radius Neighbors & 0.05620 $+/-$ 0.0000 \\
+\end{tabular}
+\end{table}
+\label{RankCar}
+\begin{table}[p]
+\caption{Rank do Desempenho dos Algoritmos no Data Set Car Evaluation}
+\centering
+\begin{tabular}{r|l|r}
+Posição & Algoritmo & Acur{\'a}cia M{\'e}dia e Desvio Padr{\~a}o\\
+\hline
+1 & Decision Tree & 0.0814 $+/-$ 0.0003 \\
+2 & Gradient Boosting & 0.0810 $+/-$ 0.0000 \\
+3 & KNN & 0.0804 $+/-$ 0.0000 \\
+4 & GaussianNB & 0.0793 $+/-$ 0.0000 \\
+5.5 & Kernel Ridge & 0.0787 $+/-$ 0.0000 \\
+5.5 & LinearSVC & 0.0787 $+/-$ 0.0000 \\
+7 & LDA & 0.8484 $+/-$ 0.0000 \\
+8 & SGD & 0.0754 $+/-$ 0.0059 \\
+9 & Passive Aggressive & 0.0742 $+/-$ 0.0069 \\
+12 & MultinomialNB & 0.0729 $+/-$ 0.0000 \\
+12 & BernoulliNB & 0.0729 $+/-$ 0.0000 \\
+12 & Perceptron & 0.0729 $+/-$ 0.0000\\
+12 & SVC  & 0.0729 $+/-$ 0.0000\\
+12 & Radius Neighbors & 0.0729 $+/-$ 0.0000 \\
+15 & NuSVC & 0.0000 $+/-$ 0.0000 \\
+\end{tabular}
+\end{table}
+\subsection{Avaliações de Desempenho : Análise Single Problem}
+    Nessa etapa utilizaremos os testes não paramétricos para validar ou não rank obtido nas bases de dados . No caso como foi verificado que a maioria dos algoritmos não passaram nos testes de normalidade, o teste estatísticos não paramétrico de Wilcoxon - \emph{Wilcoxon Signed Rank} entre os dois algoritmos que tiveram a melhor acurácia.
+
+\subsection{Data Set Abalone}
+    Como visto na tabela 1, os algoritmos de \emph{LDA} e \emph{LinearSVC} foram os que melhor obtiveram sucesso na tarefa de classificação na base Abalone. Para verificar se de fato essa diferença entre eles é estatisticamente significativa ou fruto do mero acaso, foi utilizado o método de Wilcoxon Signed Rank \cite{Garciaetal2008}\cite{scipy} o pacote onde a hipótese nula é de as duas amostras relacionados são da mesma população, caso a hipótese nula seja rejeitada , podemos concluir que não são da mesma população e a diferença é de fato significativa.
+    Utilizando a implementação do teste na linguagem Python pelo módulo \emph{stats.wilcoxon} entre o algoritmo \emph{LDA} e o \emph{LinearSVC}, no base \emph{abalone}, considerando $\alpha = 0.05$, o \emph{p-value} obtido foi de $1.27050005636171e-21$. Como o p-value é menor do que o nosso $\alpha$ , a hipótese nula de que as amostras são da mesma população foi rejeitada, e podemos concluir que a diferença apresentada pelo \emph{LDA} foi de fato significativa em relação ao \emph{LinearSVC} na base \emph{abalone}
+
+\subsection{Data Set Bank}
+    Na tabela 2, os algoritmos \emph{KNN} e \emph{Decision Tree} foram os que obtiveram maior acurácia média na base \emph{Bank}, acima de 90\%.
+    Para validar o \emph{KNN} como campeão em relação ao \emph{Decision Tree}, foi utilizado o teste de Wilcoxon Signed Rank, que é uma alternativa não paramétrica ao método paramétrico \emph{T Pareado}.Considerando nosso $\alpha = 0.05$ , que é o nosso nível de significância , ou em outras palavras, a chance de rejeitarmos a hipótese nula sendo ela verdadeira.O \emph{p-value} calculado entre o algoritmo \emph{KNN} e o \emph{Decision Tree} foi de $( 3.4816449004796852e-18)$, o que é menor do que nosso $\alpha$, portanto podemos concluir que o desempenho foi significativo.
+
+\subsection{Data Set Car}
+    Na tabela 3, os algoritmos \emph{Decision Tree} e \emph{Gradient Boosting} foram os melhores na base \emph{Car Evaluation}, com uma pequena vantagem ao \emph{Decision Tree} com relação ao \emph{Gradient Boosting}.
+    Com o teste de Wilcoxon queremos verificar se essa pequena diferença é significativa estatisticamente. Utilizando como $\alpha = 0.05$, o \emph{p-value} obtido entre o \emph{Decision Tree} e o \emph{Gradient Boosting} foi de $3.8779181150546794e-18$.Comprovando que o desempenho foi estatisticamente superior na base \emph{Car}
+
+\section{Conclusões}
+
+    O uso de médias para representar o desempenho de algoritmos é uma prática muito utilizada em artigos científicos , porém , apesar de fácil entendimento dos resultados, o seu uso não traz nenhuma validade estatistica uma vez que ela pressume que há alguma medida comum entre as amostras, o que nem sempre é verdade, por isso, a validação dos resultados com testes não paramétricos como o caso do Wilcoxon para testes pareados se faz oportuno e confiável.\cite{Salzberg1997}.   
+    Como os testes não paramétricos não são feitas suposições sobre os dados , de qual distribuição são ou qualquer outra característica que deve ser verificada como nos casos dos métodos paramétricos.
+    A proposta do trabalho foi validar os desempenhos médios de alguns algoritmos de classificação em alguns data sets de forma válida estatisticamente.
+    O trabalho conseguiu validar os resultadas das médias dos algoritmos nas bases de dados através da confirmação por meio de testes não-paramétricos que as diferenças encontradas entre os algoritmos foram de fato significativas e não aleatórias.
+
+\newpage
 \section{Considerações finais}
-\section{Referências}
-\section{Anexos}
-\subsection{Matrizes de confusão}
 
+\subsection{Dificuldades}
+Esta subseção trata das dificuldades encontradas na execução deste trabalho.
 
+\subsubsection{Planejamento}
+Em alguns programas de pós graduação (como por exemplo o PPGEE, da UFMG) há oferta de disciplina de Análise de Experimentos. Encontramos referências de livros abertos na Web que tratam de análise de experimentos (utilizando testes paramétricos, entretanto) em que o volume chega a quase 700 páginas \cite{exp}. Tanto a disciplina quanto o livro referido condensam informações sobre técnicas para realizar e tirar conclusões de experimentos como os deste trabalho. Obviamente, o tempo necessário para absorver os conhecimentos necessários para fazer um trabalho minimamente bem fundamentado é, no melhor dos casos, escasso. 
+
+Portanto, tentou-se aplicar técnicas básicas de análise de experimentos para avaliar a \textit{performance} dos algoritmos e mesmo assim sem grande critério. Um exemplo é o número de \textit{datasets} necessários para o teste de Friedman: segundo \cite{scipy} seria necessário testes com pelo menos seis datasets e dez algoritmos de classificação.
+
+\subsubsection{Classificadores}
+
+Pelo fato da base de conhecimentos sobre estatística dos autores deste trabalho ser insuficiente, procurou-se focar na remediação desta deficiência em detrimento das demais atividades do trabalho.
+
+Sendo assim, com o tempo despendido não foi possível entender com profundidade cada um dos classificadores utilizados para este trabalho. São 15 classificadores em que apenas uma análise superficial foi feita de cada um. Desta forma, o primeiro objetivo deste trabalho ficou comprometido.
+
+\newpage
+%\section{Referências}
+\begin{thebibliography}{Referencias}
+
+\bibitem{abalone}
+Abalone Data Set 
+\url{http://mlr.cs.umass.edu/ml/datasets/Abalone}
+
+\bibitem{banknote}
+Banknote Authentication 
+\url{http://mlr.cs.umass.edu/ml/datasets/banknote+authentication}
+
+\bibitem{cardata}
+Car Evaluation 
+\url{http://mlr.cs.umass.edu/ml/datasets/Car+Evaluation}
+
+\bibitem{Demsar2006}
+DEMSAR,JANEZ.Statistical Comparisons of Classifiers over Multiple Data Sets.Journal of Machine Learning Research.Ljubljana.Eslovênia.Págs 1-30.2006
+
+\bibitem{Garciaetal2008}
+GARCIA,Salvador.MOLINA,Daniel.LOZANO,Manuel.HERRERA,Franciso.A study on the use of non-parametric for analyzing the evolutionary algorithm's behaviour: a case study on the CEC'2005 Special Session on Real Parameter Optimization.Springer.2008.
+
+\bibitem{numpy}
+Numpy.org
+\url{http://www.numpy.org}
+
+\bibitem{portalaction}
+Portal Action
+\url{http://www.portalaction.com.br}
+
+\bibitem{Salzberg1997}
+SALZBERG,Steven L.On Comparing Classifiers: Pitfalls To Avoid and a Recommended Approach.Data Mining and Knowledge Discovery.Kluwer Academic Publishres,Boston,USA.Págs.317-328.1997.
+
+\bibitem{scikitlearn}
+Scikit Learnig 
+\url{scikit-learn.org}
+
+\bibitem{scipy}
+Scipy.org. Statistical Functions
+\url{http://docs.scipy.org/doc/scipy-0.14.0/reference/stats.html}
+
+\bibitem{exp}
+ OEHLERT, Gary W. A First Course in Design and Analysis of Experiments
+\url{http://users.stat.umn.edu/~gary/book/fcdae.pdf}
+
+\bibitem{uci}
+UCI Machine Learning Repository
+\url{http://mlr.cs.umass.edu/ml/index.html}
+\end{thebibliography}
 \end{document}

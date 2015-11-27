@@ -203,7 +203,7 @@ if __name__ == '__main__':
         list_args = []
         for dataset in DATASETS:
             N = len(load_dataset(dataset))
-            kf = list(KFold(n=N, n_folds=10))
+            kf = list(KFold(n=N, n_folds=10, shuffle=True))
             classes_possiveis = sorted(list(set((load_dataset(dataset).T[-1]))))
             for funcao in FUNCOES:
                 for trainset, testset in kf:
