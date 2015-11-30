@@ -67,10 +67,11 @@ def fitness(individuo):
     verdadeiro_negativo = 0
     falso_positivo = 0
     falso_negativo = 0
-    ldataset = len(DATASET)
-    for l1 in xrange(ldataset):
-        for l2 in xrange(l1+1, ldataset):
+    for l1 in xrange(len(DATASET)):
+        for l2 in xrange(l1+1, len(DATASET)):
             linha1, linha2 = DATASET[l1], DATASET[l2]
+            if linha1 == linha2:
+                continue
             evidencias = {}
             for attr in linha1.keys():
                 if attr != 'rec_id':
