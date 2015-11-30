@@ -1,8 +1,8 @@
 default:
 	pdflatex artigo
-	#bibtex artigo
+	bibtex artigo
 	pdflatex artigo
-	#bibtex artigo
+	bibtex artigo
 	wait
 	pdflatex artigo
 	evince artigo.pdf

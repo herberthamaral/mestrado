@@ -5,10 +5,10 @@
 
 \title{Análise de características autonômicas do Google App Engine}
 \author{
-        Herberth Amaral \\
-                Departamento de Ciência da Computação\\
-                Programa de Pós Graduação em Modelagem Computacional e Sistemas\\
-        UNIMONTES\\
+Herberth Amaral \\
+Departamento de Ciência da Computação\\
+Programa de Pós Graduação em Modelagem Computacional e Sistemas\\
+Universidade Estadual de Montes Claros - UNIMONTES\\
 }
 \date{\today}
 
@@ -112,13 +112,164 @@ determinado instante.
     \label{fig:instancias}
 \end{figure}
 
+Por questões de segurança, o GAE mantém as versões das aplicações implantadas e
+fornece a opção de intercâmbio entre elas. Um cenário de exemplo envolve uma
+empresa que enviou uma versão errada e precisa voltar para a última versão.
+Dependendo de como a aplicação é configurada em um servidor tradicional, esta
+não pode não ser uma tarefa simples. A figura \ref{fig:versoes} mostra a
+listagem das versões de uma aplicação.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{versoes.png}
+    \caption{Instâncias da aplicação (fonte própria)}
+    \label{fig:versoes}
+\end{figure}
+
 \subsection{Serviços disponíveis}
+
+Uma aplicação é composta de, pelo menos, uma instância que a executa. No
+entanto, em cenários práticos, raramente uma aplicação é composta da instância
+apenas. A seguir, lista-se os serviços básicos disponíveis no GAE para suporte
+à aplicações.
+
+\subsubsection{BigTable}
+
+O BigTable é uma tecnologia de banco de dados do Google altamente escalável,
+que permite grandes volumes armazenamento (algo da ordem de terabytes ou até
+petabytes de dados) \cite{bigtable}. O BigTable também é o banco de dados
+padrão do GAE.
+
+O principal fator que permite a alta escalabilidade do BigTable é ausência de
+restrições de integridade por padrão, como é comum em bancos de dados
+relacionais. Por este motivo, o BigTable não é indicado para aplicações que
+precisam ter um alto controle da integridade dos dados (como por exemplo,
+aplicações financeiras).
+
+Segundo \cite{bigtable}, as principais aplicações do BigTable são:
+\begin{enumerate}
+    \item Dados de marketing: histórico de compras e preferências de consumidores;
+    \item Dados financeiros não-sensíveis, tais como histórico de transações, preço de ações e taxas de câmbio;
+    \item Dados de Internet das coisas, tais como relatório de uso de medidores de energia e appliances domésticos;
+    \item Dados de séries temporais, tais como uso de CPU e memória com o tempo de múltiplos servidores.
+\end{enumerate}
+
+Apesar do BigTable não ser uma opção viável para algumas aplicações, há a
+possibilidade de mesclar o armazenamento de dados. Desta forma é possível
+deixar os dados sensíveis em um banco de dados relacional (Google Cloud SQL) e
+os dados de maior volume e sem grande importância de integridade no BigTable.
+
+\subsubsection{CloudSQL}
+
+O Google Cloud SQL é uma solução de banco de dados relacional completamente
+gerenciado pelo Google \cite{cloudsql}. É uma alternativa ao BigTable no que
+tange a segurança de integridade dos dados.
+
+Atualmente o Google Cloud SQL só provê suporte para o sistema de gerenciamento
+de banco de dados MySQL.
+
+\subsubsection{Task Queue}
+
+O \textit{Task Queue}, ou simplesmente fila de tarefas, é um mecanismo
+disponibilizado pelo GAE para execução de tarefas demoradas para serem feitas
+em uma única requisição, como a geração de relatórios complexos ou o envio de
+múltiplos e-mails.
+
+Por padrão, o tempo de execução de cada requisição é de até 60 segundos \cite{timeout}. Para
+requisições acima deste tempo, há a necessidade da fila de tarefas.
+
+\subsubsection{E-mail}
+
+O GAE fornece uma interface de programação para envio de e-mails sem a
+necessidade de configurar um servidor para tal fim \cite{mail}.
+
+Por questões de segurança, não é possível enviar e-mails conectando-se
+diretamente a um servidor SMTP na porta 25, mas é possível utilizando a porta
+587 \cite{sockets}.
+
 \subsection{Configuração dos elementos autonômicos}
+
+Para oferecer uma boa qualidade de serviço, elementos de computação autonômica
+são essenciais para o GAE. O principal motivo para essa característica é a alta
+complexidade interna do GAE, que não pode ser exposta para o usuário final.
+
+A seguir, expõe-se cada elemento da computação autonômica do GAE.
+
 \section{Auto-cura}
+
+O processo de auto-cura é o mais importante do GAE porque, dado a complexidade
+interna do GAE, componentes falham e precisam ser restaurados ao seu estado
+original.
+
+A auto-cura do GAE compreende principalmente os seguintes pontos:
+
+\begin{enumerate}
+    \item Auto-restauração de instâncias que foram "mortas" por algum motivo;
+    \item Auto-restauração de backups de bases de dados que foram corrompidas;
+    \item Auto-restauração de conexões de rede;
+\end{enumerate}
+
 \section{Auto-otimização}
+
+Alguns serviços web possuem uma rotina de acesso não-constante em que em
+determinados períodos do dia há mais demanda que outros. Para efeitos de
+economia, apenas o que é necessário no momento é instanciado e mais instâncias
+são adicionadas à medida que a demanda aumenta. Esse recurso é conhecido como
+\textit{autoscaling} \cite{autoscaling}.
+
+Essas instâncias podem ser instâncias do servidor da aplicação, de fila de
+tarefas ou de bancos de dados (no caso, somente o BigTable).
+
+
 \section{Auto-proteção}
+
+Os protocolos de auto-proteção, tais como auto-atualização da pilha de software
+e uso de HTTPs por padrão, são aplicados no GAE por padrão \cite{whitepaper}. No entanto, os
+protocolos básicos por si, não atendem as demandas atuais de auto-proteção de
+serviços web.
+
+O tipo de ataque mais difícil de lidar é o ataque de negação de serviço
+distribuído (DDoS - \textit{distributed denial of service}), pois há várias
+fontes do ataque e a classificação de um alto número de acessos para um ataque
+não é trivial.
+
+No entanto, apesar das dificuldades, o GAE oferece uma boa proteção à DDoS
+através do bloqueio de acesso de regiões com alto número de requisições
+sabidamente maliciosas \cite{dos}.
+
 \section{Auto-configuração}
+
+Na complexa infraestrutura do Google, boa parte dos parâmetros não são
+configurados manualmente. Isso significa que o Google abstrai boa parte da
+complexidade de configuração para seu usuário final.
+
+URLs de bancos de dados, sistema operacional de execução, configurações de rede
+e de firewall são alguns dos vários itens auto-configurados pelo GAE.
+
+No auto-scaling também é necessário auto-configurar as novas instâncias e assim
+a auto-configuração efetua um dos seus papéis fundamentais, que é permitir a
+auto-cura e a auto-otimização.
+
 \section{Considerações finais}
 
+Este artigo procurou mostrar como os mecanismos de computação autonômica
+aplicam-se no GAE. De fato, não é possível disponibilizar uma plataforma de
+PaaS sem os elementos da computação autonômica, uma vez que a complexidade de
+não ter um dos itens é imensa.
+
+O mecanismo de auto-cura busca assegurar que a aplicação funcione pelo máximo
+de tempo possível, independentemente das interpéries que podem acontecer.
+
+A habilidade de escalar automaticamente é o principal componente da
+auto-otimização, que é um pouco também do processo de auto-cura pelo fato que
+este mecanismo busca manter a aplicação responsiva mesmo sob alta carga de
+trabalho.
+
+Os protocolos de segurança adotados pelo Google, com configurações disponíveis
+para o usuário formam o componente de auto-proteção. Sem este mecanismo não
+seria possível contar com nenhum outro do sistema autonômico.
+
+\bibliographystyle{alpha}
+\bibliography{artigo}
+
 \end{document}
-This is never printed
