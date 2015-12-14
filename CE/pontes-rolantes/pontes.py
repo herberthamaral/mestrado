@@ -29,9 +29,9 @@ TEMPOS_EXECUCAO = {
 }
 
 pontes = {
-        'A': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV1'},
-        'B': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV1'},
-        'C': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'FP'},
+        'A': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV1', 'intuito_de_pegar': None},
+        'B': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV1', 'intuito_de_pegar': None},
+        'C': {'origem': None, 'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'FP', 'intuito_de_pegar': None},
 }
 estagios = {
         'CV1': {'os': None,'tempo_restante': 0, 'nome': 'CV1', 'status':'parado'}, 
@@ -62,6 +62,7 @@ def tick(estagios, pontes, debug=False):
                 estagios[e]['status'] = 'parado'
                 log('Fim do processamento da O.S {os} no estagio {estagio}'.format(os=estagios[e]['os'][0], estagio=e), debug)
     for p in pontes.keys():
+        estagio_da_os = filter(lambda k: estagios[k]['os'] == (400011, 'A'), estagios.keys())
         if pontes[p]['status'] == 'transportando':
             pontes[p]['tempo_restante'] -= 1
             if pontes[p]['tempo_restante'] == 0:
@@ -142,11 +143,17 @@ def movimenta_se_possivel(ponte, destino, pontes, debug=False):
     if caminho:
         movimenta_se_possivel(caminho[0], destino, pontes, debug)
     if pontes[ponte]['status'] == 'parada':
-        log('Movimentando ponte {ponte} para {destino}'.format(**locals()), debug)
         pontes[ponte]['status'] = 'transportando'
         pontes[ponte]['origem'] = pontes[ponte]['estagio']
         pontes[ponte]['destino'] = destino
-        pontes[ponte]['tempo_restante'] = TEMPOS_DESLOCAMENTO[pontes[ponte]['origem']][pontes[ponte]['destino']]/2
+        try:
+            log('Movimentando ponte {ponte} vazia para {destino}'.format(**locals()), debug)
+            pontes[ponte]['tempo_restante'] = TEMPOS_DESLOCAMENTO[pontes[ponte]['origem']][pontes[ponte]['destino']]/2
+        except:
+            log('Movimentando ponte {ponte} para {destino} através do deslocamento para CV1'.format(**locals()), debug)
+            pontes[ponte]['destino'] = 'CV1' 
+            pontes[ponte]['tempo_restante'] = TEMPOS_DESLOCAMENTO[pontes[ponte]['origem']]['CV']/2
+
 
 def log(msg, debug=False):
     if debug:
@@ -154,43 +161,62 @@ def log(msg, debug=False):
 
 def executa(pontes, estagios, transicoes, debug=False):
     tempo_total = 0
+    qtd_transicoes = len(transicoes)
+    iteracoes_com_mesmo_numero_de_transicoes = 0
     while len(transicoes) > 0:
         remover = []
+        if qtd_transicoes == len(transicoes):
+            iteracoes_com_mesmo_numero_de_transicoes += 1
+        else:
+            iteracoes_com_mesmo_numero_de_transicoes = 0
+            qtd_transicoes = len(transicoes)
+
+        if iteracoes_com_mesmo_numero_de_transicoes == 10:
+            print u'Parado há mais de 10 iterações'
+            iteracoes_com_mesmo_numero_de_transicoes = 0
+            for p in pontes.keys():
+                pontes[p]['intuito_de_pegar'] = None
         for t in transicoes:
-            if t['origem'] is None and estagios[t['destino']]['os'] is None:
+            if t['origem'] is None and estagios[t['destino']]['os'] is None: #entrada de O.S na aciaria
                 estagios[t['destino']]['os'] = t['os']
                 estagios[t['destino']]['tempo_restante'] = TEMPOS_EXECUCAO[estagios[t['destino']]['nome']]
                 estagios[t['destino']]['status'] = 'processando'
                 log('Adiciona OS {os} em {destino}'.format(os=t['os'][0], destino=t['destino']), debug)
                 remover.append(t)
-            if t['destino'] is None and estagios[t['origem']]['os'] is not None:
+            if t['destino'] is None and estagios[t['origem']]['os'] is not None: #saída de O.S da aciaria
                 estagios[t['origem']]['os'] = None
                 remover.append(t)
-            if t['origem'] is not None and estagios[t['origem']]['os'] and estagios[t['origem']]['status'] == 'parado':
-                if pontes[t['ponte']]['status'] == 'parada' and pontes[t['ponte']]['estagio'][:2] == t['origem'][:2]:
+            if t['origem'] is not None and estagios[t['origem']]['os'] and estagios[t['origem']]['status'] == 'parado': #'meio de campo' da aciaria
+                if pontes[t['ponte']]['status'] == 'parada' and \
+                   pontes[t['ponte']]['estagio'][:2] == t['origem'][:2] and \
+                   t['os'] == estagios[t['origem']]['os'] and\
+                   not estagios[t['destino']]['os']:
                     caminho = pontes_no_caminho(t['ponte'], t['destino'], pontes)
                     if caminho:
                         movimenta_se_possivel(caminho[0], t['destino'], pontes, debug)
                     else:
-                        pontes[t['ponte']]['status'] = 'transportando'
-                        pontes[t['ponte']]['os'] = t['os']
-                        pontes[t['ponte']]['origem'] = t['origem']
-                        pontes[t['ponte']]['destino'] = t['destino']
-                        pontes[t['ponte']]['tempo_restante'] = TEMPOS_DESLOCAMENTO[t['origem']][t['destino']]
-                        kwargs = dict(os=t['os'][0], origem=t['origem'], ponte=t['ponte'], destino=t['destino'])
-                        log('Pega OS {os} em {origem} com ponte {ponte} para levar para {destino}'.format(**kwargs), debug)
-                        estagios[t['origem']]['os'] = None
-                        remover.append(t)
+                        if not pontes[t['ponte']]['intuito_de_pegar'] or pontes[t['ponte']]['intuito_de_pegar'] == t['os']:
+                            pontes[t['ponte']]['status'] = 'transportando'
+                            pontes[t['ponte']]['os'] = t['os']
+                            pontes[t['ponte']]['origem'] = t['origem']
+                            pontes[t['ponte']]['destino'] = t['destino']
+                            pontes[t['ponte']]['tempo_restante'] = TEMPOS_DESLOCAMENTO[t['origem']][t['destino']]
+                            pontes[t['ponte']]['intuito_de_pegar'] = None
+                            kwargs = dict(os=t['os'][0], origem=t['origem'], ponte=t['ponte'], destino=t['destino'])
+                            log('Pega OS {os} em {origem} com ponte {ponte} para levar para {destino}'.format(**kwargs), debug)
+                            estagios[t['origem']]['os'] = None
+                            remover.append(t)
                 if pontes[t['ponte']]['status'] == 'parada' and pontes[t['ponte']]['estagio'][:2] != t['origem'][:2] and not pontes[t['ponte']]['os']:
                     caminho = pontes_no_caminho(t['ponte'], t['destino'], pontes)
                     if caminho:
                         movimenta_se_possivel(caminho[0], t['destino'], pontes, debug)
-                    else:
+                    elif not pontes[t['ponte']]['intuito_de_pegar']:
                         pontes[t['ponte']]['status'] = 'transportando'
                         pontes[t['ponte']]['os'] = None
                         pontes[t['ponte']]['origem'] = pontes[t['ponte']]['estagio']
                         pontes[t['ponte']]['destino'] = t['origem']
                         pontes[t['ponte']]['tempo_restante'] = TEMPOS_DESLOCAMENTO[t['origem']][t['destino']]/2
+                        pontes[t['ponte']]['intuito_de_pegar'] = t['os']
                         kwargs = dict(ponte=t['ponte'], destino=t['origem'], os=t['os'][0], origem=pontes[t['ponte']]['estagio'])
                         log('Movimenta ponte {ponte} vazia de {origem} para {destino} para pegar O.S {os}'.format(**kwargs), debug)
 
