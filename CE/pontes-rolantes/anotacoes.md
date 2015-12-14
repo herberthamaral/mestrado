@@ -3,6 +3,7 @@ Anotações sobre o sistema de pontes rolantes
 
 - Pontes A e B podem ir para qualquer lugar;
 - Ponte C só vai do centro até os lingotamentos;
+- A ordem das O.S é a mesma da tabela;
 - Não é necessário uma ponte para ir do convertedor (CV) até o borbulhamento (BO);
 
 
@@ -69,3 +70,37 @@ Procedimento Tick:
       pontos em execução (fornos e pontes).
     - Para todos os trabalhos concluídos
         - Coloca objeto (ponte ou forno) em questão como parado.
+
+Representação do indivíduo
+--------------------------
+
+A representação do indivíduo é composta por transições necessárias para
+executar as O.S em ordem. É uma lista de tuplas neste formato:
+    (O.S, fonte, destino, ponte)
+
+A primeira abordagem somente vai mexer na ponte utilizada para transportar a O.S;
+
+Inicialmente, um indivíduo terá todas as transições.
+
+Operadores
+----------
+
+### Cruzamento
+
+Como a ordem tem que ser mantida, o operador por ponto de corte aleatório será usado.
+
+### Mutação
+
+O operador de mutação apenas trocará a ponte responsável pela transição. Cada
+transição terá uma chance fixa de mutação (inicialmente 2% em uma distribuição normal).
+
+### Seleção
+
+Roleta.
+
+Função custo
+------------
+
+Como este problema é um problema de minimização, então há uma função de custo a
+ser minimizada. A função custo é somente o tempo necessário em minutos para
+processar o indivíduo.
