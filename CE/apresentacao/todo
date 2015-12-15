@@ -1,0 +1,24 @@
+Titulo => A New Metaheuristic Bat-Inspired Algorithm (http://arxiv.org/pdf/1004.4170.pdf)
+
+Algoritmo baseado na localização por eco de morcegos. Morcegos são praticamente cegos e evitam obstáculos e caçam presas utilizando localização por eco.
+
+- Proposta: probabilidade do morcego ficar rouco para explorar melhor o espaço
+  de busca;
+
+- Morcegos fecham o músculo das orelhas quando vão 'gritar' para evitar que
+  fiquem surdos, logo eles não tem como saber que estão roucos;
+
+- the duration of a call usually decreases when the bat is in the final stages
+  of prey capture – this enables the bat to call more rapidly without overlap
+  of call and echo. Reducing duration comes at the cost of having less total
+  sound available for reflecting off objects and being heard by the bat.[https://dx.doi.org/10.1098%2Frspb.2006.0200]
+
+
+-----
+Notificações na tela bloqueada
+    - Problema no iOS;
+    - Cliente mandou e-mail falando de problemas;
+    - Tá mandando para as notas 20%
+    - Relatórios que a Cynara está pedindo;
+    - Renovações do wallet e do pagseguro aparecerem no wallet (wallet já estão no painel segundo o edson);
+    - Todas as compras do pagar.me estão aparecendo duplicadas no panel (não procede);

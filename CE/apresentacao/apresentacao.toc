@@ -1,0 +1,5 @@
+\beamer@endinputifotherversion {3.24pt}
+\select@language {brazil}
+\beamer@sectionintoc {1}{Perguntas}{14}{0}{1}
+\beamer@sectionintoc {2}{Muito obrigado!}{15}{0}{2}
+\beamer@sectionintoc {3}{Refer\^encias}{16}{0}{3}
