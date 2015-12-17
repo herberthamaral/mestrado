@@ -499,24 +499,25 @@ OSES = (
     (404791,'C','CV02','','','CL15'),
 )
 
-def gera_transicoes_com_pontes_aleatorias():
+def gera_individuo():
     transicoes = []
 
-    ponte = lambda anterior: random.choice(('A', 'B', 'C')) if anterior[:2] != 'CV' else random.choice(('A', 'B')) 
+    possiveis = lambda anterior: ('A', 'B', 'C') if anterior[:2] != 'CV' else ('A', 'B')
+    ponte = lambda anterior: random.choice(possiveis(anterior))
 
     for os in OSES:
         transicoes.append(dict(origem=None, destino=os[2], os=os[:2], ponte='A'))
         anterior = os[2]
         if os[3]:
-            transicoes.append(dict(origem=anterior, destino=os[3], os=os[:2], ponte=ponte(anterior)))
+            transicoes.append(dict(origem=anterior, destino=os[3], os=os[:2], ponte=ponte(anterior), possiveis=possiveis(anterior)))
             anterior = os[3]
         if os[4]:
-            transicoes.append(dict(origem=anterior, destino=os[4], os=os[:2], ponte=ponte(anterior)))
+            transicoes.append(dict(origem=anterior, destino=os[4], os=os[:2], ponte=ponte(anterior), possiveis=possiveis(anterior)))
             anterior = os[4]
         if os[5]:
-            transicoes.append(dict(origem=anterior, destino=os[5], os=os[:2], ponte=ponte(anterior)))
+            transicoes.append(dict(origem=anterior, destino=os[5], os=os[:2], ponte=ponte(anterior), possiveis=possiveis(anterior)))
             anterior = os[5]
-        transicoes.append(dict(origem=anterior, destino=None, os=os[:2], ponte=ponte(anterior)))
-    print executa(pontes, estagios, transicoes), 'minutos'
+        transicoes.append(dict(origem=anterior, destino=None, os=os[:2], ponte=ponte(anterior), possiveis=possiveis(anterior)))
+    return transicoes
 
-gera_transicoes_com_pontes_aleatorias()
+print executa(pontes, estagios, gera_individuo())
