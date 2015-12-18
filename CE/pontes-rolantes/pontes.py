@@ -2,7 +2,7 @@
 import sys
 from copy import copy
 
-DEBUG = '--debug' in sys.argv
+DEBUG = '--internal-debug' in sys.argv
 
 def tempo_deslocamento(origem, destino):
     origem, destino = origem[:2], destino[:2]
@@ -30,18 +30,18 @@ def posicao(estagio):
 
 def tempo_execucao(estagio, aco=''):
     estagio = estagio[:2]
-    tempos = {
-        'CV': 38, 'RH': 25, 'FP': 45, 'BO': 20, 
-        'CL': {'A': 34, 'B': 34, 'C': 32, 'F':70, 'M': 0, 'N': 0, 'O': 0}, # Add: M=N=O=0min
-        'CC':{ 'A': 34, 'B': 34, 'C': 32,'D': 75, 'E': 75, 'F': 70, 'G': 80, 'H': 65, 'I': 75, 'J': 70, 'K': 80, 'L': 30, 'M': 0, 'N':0, 'O':0}, # Add M=N=O=0m
-    }
+    tempos = { 'CV': 38, 'RH': 25, 'FP': 45, 'BO': 20, 'CL': 0, 'CC': 0 }
     return tempos[estagio][aco] if type(tempos[estagio]) == dict else tempos[estagio]
 
-pontes = {
-        'A': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV01', 'intuito_de_pegar': None},
-        'B': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV01', 'intuito_de_pegar': None},
-        'C': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'FPA01', 'intuito_de_pegar': None},
-}
+def cria_pontes():
+    pontes = {
+            'A': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV01', 'intuito_de_pegar': None},
+            'B': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'CV01', 'intuito_de_pegar': None},
+            'C': {'destino': None, 'os': None, 'tempo_restante': 0, 'status': 'parada', 'estagio': 'FPA01', 'intuito_de_pegar': None},
+    }
+    return copy(pontes)
+
+pontes = cria_pontes()
 
 def cria_estagios():
     _estagios = {
