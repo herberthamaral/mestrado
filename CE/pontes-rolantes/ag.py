@@ -48,8 +48,8 @@ def cruzamento(individuos, num_filhos):
     chance_pai1 = 0.5
     for n in range(num_filhos/2):
         while pai1 == pai2:
-            pai1 = random.choice(individuos[:20])
-            pai2 = random.choice(individuos[:20])
+            pai1 = random.choice(individuos[:10])
+            pai2 = random.choice(individuos[:10])
         filho1 = []
         filho2 = []
         for pos in range(len(pai1[0])-1):
@@ -69,6 +69,7 @@ def mutacao(individuos, chance_mutacao):
     posicao = random.randint(0, qtd_cromossomos-1)
     mutados = 0
     qtd_mudancas = int(qtd_cromossomos*chance_mutacao)
+    i = 0
     while i < len(individuos):
         if chance_mutacao > random.random():
             mutados += 1
@@ -95,6 +96,7 @@ def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
     return evolucao_execucao
 
 def selecao(individuos, N):
+    selecionados = []
     return individuos[:N]
 
 def deduplica(individuos):
