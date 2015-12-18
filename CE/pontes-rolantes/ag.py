@@ -19,6 +19,9 @@ DEBUG = '--debug' in sys.argv
 # terceira dimensão da população (dentro do indivíduo): transicao (individuos[0..100][0..1900][0])
 
 def inicializa_populacao(n):
+    if n <= 0:
+        return []
+    print 'Incializando {} indivíduos'.format(n)
     individuos = [[gera_individuo(), None] for i in range(n)]
     return calcula_finess_faltantes(individuos)
 
@@ -52,7 +55,7 @@ def cruzamento(individuos, num_filhos):
             pai2 = random.choice(individuos[:10])
         filho1 = []
         filho2 = []
-        for pos in range(len(pai1[0])-1):
+        for pos in range(len(pai1[0])):
             if chance_pai1 > random.random():
                 filho1.append(pai1[0][pos])
                 filho2.append(pai2[0][pos])
@@ -64,7 +67,6 @@ def cruzamento(individuos, num_filhos):
     return individuos
 
 def mutacao(individuos, chance_mutacao):
-    i = 0
     qtd_cromossomos = len(individuos[0][0])
     posicao = random.randint(0, qtd_cromossomos-1)
     mutados = 0
@@ -75,7 +77,7 @@ def mutacao(individuos, chance_mutacao):
             mutados += 1
             posicao_cromossomos_mudados = []
             for j in range(qtd_mudancas):
-                while posicao in posicao_cromossomos_mudados or len(individuos[i][0]) < posicao or not individuos[i][0][posicao].get('possiveis'):
+                while posicao in posicao_cromossomos_mudados or not individuos[i][0][posicao].get('possiveis'):
                     posicao = random.randint(0, qtd_cromossomos-1)
                 individuos[i][0][posicao]['ponte'] = random.choice(individuos[i][0][posicao]['possiveis'])
                 individuos[i][1] = None
@@ -96,29 +98,38 @@ def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
     return evolucao_execucao
 
 def selecao(individuos, N):
-    selecionados = []
     return individuos[:N]
 
-def deduplica(individuos):
-    unicos = []
-    return [unicos.append(individuo) for individuo in individuos if individuo not in unicos and len(individuo) == 1922]
+def corrige(individuos):
+    qtd = len(individuos)
+    ret = [i for i in individuos if len(i[0]) == 1922]
+    if len(ret) < qtd:
+        print 'Corrigindo {} individuos'.format(qtd-len(ret))
+    return ret
+
+def ordena(individuos):
+    return sorted(individuos, key=lambda k: k[1])
 
 def ag():
     N = 100
     inicio_exec = now()
     individuos = inicializa_populacao(N)
     evolucao_execucao = []
-    melhor = sorted(individuos, key=lambda k: k[1])[0]
+    melhor = ordena(individuos)[0]
     for geracao in range(200):
         inicio = datetime.datetime.now()
-        individuos = cruzamento(individuos, 10)
-        individuos = mutacao(individuos, 0.02)
-        individuos = deduplica(individuos)
-        individuos = individuos + inicializa_populacao(N-len(individuos))
+        individuos = corrige(individuos)
+        individuos = cruzamento(individuos, 20)
+        individuos = corrige(individuos)
+        individuos = mutacao(individuos, 0.05)
+        individuos = corrige(individuos)
         individuos = calcula_finess_faltantes(individuos)
-        individuos = sorted(individuos, key=lambda k: k[1])
+        individuos = ordena(individuos)
+        individuos = individuos + inicializa_populacao(N-len(individuos))
+        individuos = ordena(individuos)
         individuos = selecao(individuos, N)
-        melhor = individuos[0] if individuos[0][1] < melhor else melhor
+        individuos = corrige(individuos)
+        melhor = individuos[0] if individuos[0][1] < melhor[1] else melhor
         evolucao_execucao = salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao)
     print 'Melhor fitness: {}'.format(melhor[1])
 
