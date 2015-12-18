@@ -46,17 +46,21 @@ def calcula_finess_faltantes(individuos):
 def cruzamento(individuos, num_filhos):
     pai1 = pai2 = None
     chance_pai1 = 0.5
-    for n in range(num_filhos):
+    for n in range(num_filhos/2):
         while pai1 == pai2:
-            pai1 = random.choice(individuos)
-            pai2 = random.choice(individuos)
-        filho = []
+            pai1 = random.choice(individuos[:20])
+            pai2 = random.choice(individuos[:20])
+        filho1 = []
+        filho2 = []
         for pos in range(len(pai1[0])-1):
             if chance_pai1 > random.random():
-                filho.append(pai1[0][pos])
+                filho1.append(pai1[0][pos])
+                filho2.append(pai2[0][pos])
             else:
-                filho.append(pai2[0][pos])
-        individuos.append([filho, None])
+                filho1.append(pai2[0][pos])
+                filho2.append(pai1[0][pos])
+        individuos.append([filho1, None])
+        individuos.append([filho2, None])
     return individuos
 
 def mutacao(individuos, chance_mutacao):
@@ -70,27 +74,21 @@ def mutacao(individuos, chance_mutacao):
             mutados += 1
             posicao_cromossomos_mudados = []
             for j in range(qtd_mudancas):
-                try:
-                    if len(individuos[i][0]) < posicao:
-                        import pdb;pdb.set_trace()
-                    while posicao in posicao_cromossomos_mudados or len(individuos[i][0]) < posicao or not individuos[i][0][posicao].get('possiveis'):
-                        posicao = random.randint(0, qtd_cromossomos-1)
-                        if len(individuos[i][0]) < posicao:
-                            import pdb;pdb.set_trace()
-                    individuos[i][0][posicao]['ponte'] = random.choice(individuos[i][0][posicao]['possiveis'])
-                    individuos[i][1] = None
-                    posicao_cromossomos_mudados.append(posicao)
-                except IndexError:
-                    import pdb;pdb.set_trace()
+                while posicao in posicao_cromossomos_mudados or len(individuos[i][0]) < posicao or not individuos[i][0][posicao].get('possiveis'):
+                    posicao = random.randint(0, qtd_cromossomos-1)
+                individuos[i][0][posicao]['ponte'] = random.choice(individuos[i][0][posicao]['possiveis'])
+                individuos[i][1] = None
+                posicao_cromossomos_mudados.append(posicao)
         i += 1
     return individuos
 
-now = lambda: datetime.datetime.now().time().strftime('%Hh%Mm') 
+now = lambda: datetime.datetime.now().time().strftime('%Hh%Mm%Ss')
 
 def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
     fim = datetime.datetime.now()
-    print '[G{}][{}] Pior fitness {}'.format(geracao, now(), individuos[-1][1])
-    print '[G{}][{}] Melhor fitness {}'.format(geracao, now(), individuos[0][1])
+    g = str(geracao).rjust(5, '0')
+    print '[G{}][{}] Pior fitness {}'.format(g, now(), individuos[-1][1])
+    print '[G{}][{}] Melhor fitness {}'.format(g, now(), individuos[0][1])
     evolucao_execucao.append(((fim-inicio).total_seconds(), individuos[0]))
     with open('execucao-{hora}.json'.format(hora=inicio_exec), 'w') as arquivo:
         arquivo.write(json.dumps(evolucao_execucao))
@@ -99,20 +97,29 @@ def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
 def selecao(individuos, N):
     return individuos[:N]
 
+def deduplica(individuos):
+    unicos = []
+    return [unicos.append(individuo) for individuo in individuos if individuo not in unicos and len(individuo) == 1922]
 
 def ag():
-    N = 60
+    N = 100
     inicio_exec = now()
     individuos = inicializa_populacao(N)
     evolucao_execucao = []
-    for geracao in range(60):
+    melhor = sorted(individuos, key=lambda k: k[1])[0]
+    for geracao in range(200):
         inicio = datetime.datetime.now()
         individuos = cruzamento(individuos, 10)
         individuos = mutacao(individuos, 0.02)
+        individuos = deduplica(individuos)
+        individuos = individuos + inicializa_populacao(N-len(individuos))
         individuos = calcula_finess_faltantes(individuos)
         individuos = sorted(individuos, key=lambda k: k[1])
         individuos = selecao(individuos, N)
+        melhor = individuos[0] if individuos[0][1] < melhor else melhor
         evolucao_execucao = salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao)
+    print 'Melhor fitness: {}'.format(melhor[1])
 
 if __name__ == '__main__':
-    ag()
+    for ex in range(30):
+        ag()

@@ -1,4 +1,6 @@
 # encoding: utf-8
+import json
+import datetime
 import sys
 from copy import copy
 
@@ -31,7 +33,8 @@ def posicao(estagio):
 def tempo_execucao(estagio, aco=''):
     estagio = estagio[:2]
     tempos = { 'CV': 38, 'RH': 25, 'FP': 45, 'BO': 20, 'CL': 0, 'CC': 0 }
-    return tempos[estagio][aco] if type(tempos[estagio]) == dict else tempos[estagio]
+    return 0 #desconsidera os tempos de execução para focar somente nos tempos de movimentação das pontes
+    #return tempos[estagio][aco] if type(tempos[estagio]) == dict else tempos[estagio]
 
 def cria_pontes():
     pontes = {
@@ -264,9 +267,11 @@ def executa(pontes, estagios, transicoes):
 
         if iteracoes_com_mesmo_numero_de_transicoes > 10:
             print u'Parado há mais de {} iterações'.format(10)
-            import pdb;pdb.set_trace()
+            with open('deadlock-{}.json'.format(datetime.datetime.now().strftime('%H:%M')), 'w') as dump:
+                dump.write(json.dumps(transicoes_executadas+transicoes))
+            return 99999
 
-        for t in transicoes:
+        for t in transicoes[:20]:
             if pode_executar_transicao(t, pontes, estagios):
                 executa_transicao(t, pontes, estagios, tempo_total)
                 transicoes.remove(t)
