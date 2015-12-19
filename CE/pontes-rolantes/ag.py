@@ -83,25 +83,9 @@ def mutacao(individuos, chance_mutacao):
             ponte = individuo[posicao]['ponte']
             while ponte == individuo[posicao]['ponte']:
                 individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
-            #if individuo[posicao+1]['ponte'] in individuo[posicao]['possiveis']:
-            #    #if individuo[posicao+1]['ponte'] == individuo[posicao]['ponte']:
-            #    #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
-            #    individuo[posicao]['ponte'], individuo[posicao+1]['ponte'] = individuo[posicao+1]['ponte'], individuo[posicao]['ponte'] 
-            #elif individuo[posicao-1]['ponte'] in individuo[posicao]['possiveis']:
-            #    #if individuo[posicao-1]['ponte'] == individuo[posicao]['ponte']:
-            #    #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
-            #    individuo[posicao]['ponte'], individuo[posicao-1]['ponte'] = individuo[posicao-1]['ponte'], individuo[posicao]['ponte'] 
-            #else:
-            #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
             posicao_cromossomos_mudados.append(posicao)
 
             fitness = calcula_fitness(individuos[i])
-            if fitness > individuos[i][1]:
-                print 'Mutando para pior ({}->{}) :('.format(individuos[i][1], fitness)
-            elif fitness < individuos[i][1]:
-                print 'Mutando para melhor ({}->{}) :)'.format(individuos[i][1], fitness)
-            else:
-                print 'Mutando para o mesmo ({}->{}) :|'.format(individuos[i][1], fitness)
             individuos[i][1] = fitness
     return individuos, mutados
 
@@ -157,8 +141,9 @@ def ag():
             qtd_geracoes_sem_mudar += 1
         melhor = copy(individuos[0]) if individuos[0][1] < melhor[1] else melhor
         evolucao_execucao = salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao, mutados, melhor)
-        if qtd_geracoes_sem_mudar == 15:
-            print u'Parando por falta de convergência'
+        if qtd_geracoes_sem_mudar == 10:
+            print u'Parando por falta de convergência (10)'
+            break
     print 'Melhor fitness: {}'.format(melhor[1])
 
 if __name__ == '__main__':
