@@ -4,12 +4,13 @@ import random
 import json
 import time
 import datetime
+import copy
 from multiprocessing import Pool, cpu_count
 from pontes import executa, cria_estagios, cria_pontes
 from ordem_servico import gera_individuo
 
 def calcula_fitness(individuo):
-    return executa(cria_pontes(), cria_estagios(), individuo[0])
+    return executa(cria_pontes(), cria_estagios(), copy.copy(individuo[0]))
 
 POOL = None
 DEBUG = '--debug' in sys.argv
@@ -51,8 +52,8 @@ def cruzamento(individuos, num_filhos):
     chance_pai1 = 0.5
     for n in range(num_filhos/2):
         while pai1 == pai2:
-            pai1 = random.choice(individuos[:10])
-            pai2 = random.choice(individuos[:10])
+            pai1 = random.choice(individuos[:20])
+            pai2 = random.choice(individuos[:20])
         filho1 = []
         filho2 = []
         for pos in range(len(pai1[0])):
@@ -62,36 +63,54 @@ def cruzamento(individuos, num_filhos):
             else:
                 filho1.append(pai2[0][pos])
                 filho2.append(pai1[0][pos])
-        individuos.append([filho1, None])
-        individuos.append([filho2, None])
+        individuos.append([filho1, calcula_fitness([filho1])])
+        individuos.append([filho2, calcula_fitness([filho2])])
     return individuos
 
 def mutacao(individuos, chance_mutacao):
     qtd_cromossomos = len(individuos[0][0])
-    posicao = random.randint(0, qtd_cromossomos-1)
+    posicao = random.randint(0, qtd_cromossomos-4)
     mutados = 0
-    qtd_mudancas = int(qtd_cromossomos*chance_mutacao)
     i = 0
-    while i < len(individuos):
+    for i in range(len(individuos)):
         if chance_mutacao > random.random():
             mutados += 1
             posicao_cromossomos_mudados = []
-            for j in range(qtd_mudancas):
-                while posicao in posicao_cromossomos_mudados or not individuos[i][0][posicao].get('possiveis'):
-                    posicao = random.randint(0, qtd_cromossomos-1)
-                individuos[i][0][posicao]['ponte'] = random.choice(individuos[i][0][posicao]['possiveis'])
-                individuos[i][1] = None
-                posicao_cromossomos_mudados.append(posicao)
-        i += 1
-    return individuos
+
+            while posicao in posicao_cromossomos_mudados or not individuos[i][0][posicao].get('possiveis'):
+                posicao = random.randint(0, qtd_cromossomos-4)
+            individuo = individuos[i][0]
+            ponte = individuo[posicao]['ponte']
+            while ponte == individuo[posicao]['ponte']:
+                individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
+            #if individuo[posicao+1]['ponte'] in individuo[posicao]['possiveis']:
+            #    #if individuo[posicao+1]['ponte'] == individuo[posicao]['ponte']:
+            #    #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
+            #    individuo[posicao]['ponte'], individuo[posicao+1]['ponte'] = individuo[posicao+1]['ponte'], individuo[posicao]['ponte'] 
+            #elif individuo[posicao-1]['ponte'] in individuo[posicao]['possiveis']:
+            #    #if individuo[posicao-1]['ponte'] == individuo[posicao]['ponte']:
+            #    #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
+            #    individuo[posicao]['ponte'], individuo[posicao-1]['ponte'] = individuo[posicao-1]['ponte'], individuo[posicao]['ponte'] 
+            #else:
+            #    individuo[posicao]['ponte'] = random.choice(individuo[posicao]['possiveis'])
+            posicao_cromossomos_mudados.append(posicao)
+
+            fitness = calcula_fitness(individuos[i])
+            if fitness > individuos[i][1]:
+                print 'Mutando para pior ({}->{}) :('.format(individuos[i][1], fitness)
+            elif fitness < individuos[i][1]:
+                print 'Mutando para melhor ({}->{}) :)'.format(individuos[i][1], fitness)
+            else:
+                print 'Mutando para o mesmo ({}->{}) :|'.format(individuos[i][1], fitness)
+            individuos[i][1] = fitness
+    return individuos, mutados
 
 now = lambda: datetime.datetime.now().time().strftime('%Hh%Mm%Ss')
 
-def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
+def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao, mutados, melhor):
     fim = datetime.datetime.now()
     g = str(geracao).rjust(5, '0')
-    print '[G{}][{}] Pior fitness {}'.format(g, now(), individuos[-1][1])
-    print '[G{}][{}] Melhor fitness {}'.format(g, now(), individuos[0][1])
+    print u'[G{}][{}] Pior,Melhor fitness da geração {},{}. Mutados: {}. Melhor geral: {}'.format(g, now(), individuos[-1][1], individuos[0][1], mutados, melhor[1])
     evolucao_execucao.append(((fim-inicio).total_seconds(), individuos[0]))
     with open('execucao-{hora}.json'.format(hora=inicio_exec), 'w') as arquivo:
         arquivo.write(json.dumps(evolucao_execucao))
@@ -100,15 +119,11 @@ def salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao):
 def selecao(individuos, N):
     return individuos[:N]
 
-def corrige(individuos):
-    qtd = len(individuos)
-    ret = [i for i in individuos if len(i[0]) == 1922]
-    if len(ret) < qtd:
-        print 'Corrigindo {} individuos'.format(qtd-len(ret))
-    return ret
-
 def ordena(individuos):
     return sorted(individuos, key=lambda k: k[1])
+
+def menor(individuos):
+    return ordena(individuos)[0][1]
 
 def ag():
     N = 100
@@ -116,21 +131,34 @@ def ag():
     individuos = inicializa_populacao(N)
     evolucao_execucao = []
     melhor = ordena(individuos)[0]
-    for geracao in range(200):
+    qtd_geracoes_sem_mudar = 0
+    for geracao in range(100):
         inicio = datetime.datetime.now()
-        individuos = corrige(individuos)
         individuos = cruzamento(individuos, 20)
-        individuos = corrige(individuos)
-        individuos = mutacao(individuos, 0.05)
-        individuos = corrige(individuos)
-        individuos = calcula_finess_faltantes(individuos)
+        chance_mutacao = 0.05*qtd_geracoes_sem_mudar
+        individuos, mutados = mutacao(individuos, chance_mutacao)
         individuos = ordena(individuos)
-        individuos = individuos + inicializa_populacao(N-len(individuos))
+        if chance_mutacao > 0.3:
+            #descarta metade da população e gera novas soluções
+            individuos = individuos[:N/2]
+            individuos = individuos + inicializa_populacao(N/2)
+        if menor(individuos) > melhor[1]:
+            individuos.append(melhor)
         individuos = ordena(individuos)
         individuos = selecao(individuos, N)
-        individuos = corrige(individuos)
-        melhor = individuos[0] if individuos[0][1] < melhor[1] else melhor
-        evolucao_execucao = salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao)
+        individuos = ordena(individuos)
+        if individuos[0][1] < melhor[1]:
+            melhor = copy.copy(individuos[0])
+            qtd_geracoes_sem_mudar = 0
+        elif individuos[0][1] > melhor[1]:
+            individuos.append(melhor)
+            qtd_geracoes_sem_mudar += 1
+        else:
+            qtd_geracoes_sem_mudar += 1
+        melhor = copy(individuos[0]) if individuos[0][1] < melhor[1] else melhor
+        evolucao_execucao = salva_execucao(geracao, inicio_exec, inicio, individuos, evolucao_execucao, mutados, melhor)
+        if qtd_geracoes_sem_mudar == 15:
+            print u'Parando por falta de convergência'
     print 'Melhor fitness: {}'.format(melhor[1])
 
 if __name__ == '__main__':
