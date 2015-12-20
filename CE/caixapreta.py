@@ -3,8 +3,7 @@
 Primeiro exercício de computação evolutiva.
 """
 import sys
-import numpy as np
-import matplotlib.pyplot as plt
+import math
 from random import randint, random, uniform, seed, shuffle
 
 def individuo():
@@ -22,6 +21,8 @@ def fitness(individuo):
     return f
 
 media = lambda x: sum(x)/float(len(x))
+variancia = lambda x: sum([math.pow(xi - media(x), 2) for xi in x])/len(x)
+desvio_padrao = lambda x: math.sqrt(variancia(x))
 
 def fitness_medio_populacao(populacao):
     return media([fitness(individuo) for individuo in populacao])
@@ -31,13 +32,7 @@ def ordena_melhores(populacao):
     melhores = [x[1] for x in sorted(melhores)[::-1]]
     return melhores
 
-def selecao_elitista(populacao, objetivo, retencao):
-    melhores = ordena_melhores(populacao)
-    qtd_retencao = int(len(melhores)*retencao)
-    pais = melhores[:qtd_retencao]
-    return pais
-
-def selecao_roleta(populacao, objetivo, retencao):
+def selecao_roleta(populacao):
     fitness_populacao = float(sum([fitness(i) for i in populacao]))
     fmp = fitness_medio_populacao(populacao)
     ordenado = ordena_melhores(populacao)
@@ -48,139 +43,263 @@ def selecao_roleta(populacao, objetivo, retencao):
             if random() <= p:
                 break
         return f
-    selecionados = []
-    for x in range(int(len(populacao)*(1-retencao))):
-        selecionado = seleciona()
-        selecionados.append(selecionado)
+    selecionados = [seleciona(), seleciona()]
     return selecionados
 
-def selecao_torneio(populacao, objetivo, retencao):
+def selecao_torneio(populacao):
     t = len(populacao)-1
-    num_individuos = int(len(populacao)*retencao)
     selecionados = []
-    for i in range(num_individuos/2):
-        i1, i2 = populacao[randint(0,t)], populacao[randint(0,t)]
-        i3, i4 = populacao[randint(0,t)], populacao[randint(0,t)]
-        selecionados.append(i1 if fitness(i1) > fitness(i2) else i2)
-        selecionados.append(i3 if fitness(i3) > fitness(i4) else i4)
+    i1, i2 = populacao[randint(0,t)], populacao[randint(0,t)]
+    i3, i4 = populacao[randint(0,t)], populacao[randint(0,t)]
+    selecionados.append(i1 if fitness(i1) > fitness(i2) else i2)
+    selecionados.append(i3 if fitness(i3) > fitness(i4) else i4)
     return selecionados
 
-def mutacao_normal(individuos, taxa_mutacao):
+def mutacao_escolha_aleatoria_do_bit(individuos, taxa_mutacao):
     for individuo in individuos:
         if taxa_mutacao > random():
             posicao_da_mutacao = randint(0, len(individuo)-1)
             individuo[posicao_da_mutacao] = 1-individuo[posicao_da_mutacao]
     return individuos
 
-def mutacao_uniforme(individuos, taxa_mutacao):
+def mutacao_bit_a_bit(individuos, taxa_mutacao):
     for i, individuo in enumerate(individuos):
         for c, cromossomo in enumerate(individuo):
             if random() < taxa_mutacao:
                 individuos[i][c] = 1-individuos[i][c]
     return individuos
 
-
-def cruzamento_ponto_corte_aleatorio(pais, populacao, probabilidade):
-    qtd_pais = len(pais)
-    tamanho_desejado = len(populacao) - qtd_pais
+def cruzamento_ponto_corte_aleatorio(pais):
     filhos = []
-    while len(filhos) < tamanho_desejado:
-        macho = randint(0, qtd_pais-1)
-        femea = randint(0, qtd_pais-1)
-        if macho != femea:
-            macho = pais[macho]
-            femea = pais[femea]
-            pc = randint(0, 35)
-            filho = macho[:pc] + femea[pc:]
-            filhos.append(filho)
+    for ps in pais:
+        pc = randint(0, len(pais[0])-1)
+        filho1 = ps[0][:pc] + ps[1][pc:]
+        filho2 = ps[1][:pc] + ps[0][pc:]
+        filhos.extend([filho1, filho2])
     return filhos
 
-def cruzamento_uniforme(pais, populacao, probabilidade):
-    qtd_pais = len(pais)
-    tamanho_desejado = len(populacao) - qtd_pais
+def cruzamento_uniforme(pais):
+    pc = len(pais[0][0])/2
     filhos = []
-    while len(filhos) < tamanho_desejado:
-        macho = randint(0, qtd_pais-1)
-        femea = randint(0, qtd_pais-1)
-        macho = pais[macho]
-        femea = pais[femea]
-        if macho != femea:
-            filho = []
-            for i in range(36):
-                if random() > 0.5:
-                    filho.append(macho[i])
-                else:
-                    filho.append(femea[i])
-            filhos.append(filho)
+    for ps in pais:
+        filho1 = ps[0][:pc] + ps[1][pc:]
+        filho2 = ps[1][:pc] + ps[0][pc:]
+        filhos.extend([filho1, filho2])
     return filhos
 
-def evolucao(populacao, fitness, objetivo, retencao=0.2, taxa_mutacao=0.01, selecao=selecao_elitista,
-        mutacao=mutacao_uniforme, cruzamento=cruzamento_ponto_corte_aleatorio, probabilidade_cruzamento=0.8):
-    pais = selecao(populacao, objetivo, retencao)
-    filhos = cruzamento(pais, populacao, probabilidade_cruzamento)
-    filhos = mutacao(filhos, taxa_mutacao)
-    pais.extend(filhos)
-    return pais
+def melhor_fitness(pop):
+    return min([fitness(p) for p in pop])
 
-def melhor_fitness(pop, objetivo=27):
-    avaliacao = [(objetivo - fitness(i), i) for i in pop]
-    melhor_fitness = fitness(avaliacao[0][1])
-    return melhor_fitness
+def pior_fitness(pop):
+    return max([fitness(p) for p in pop])
 
-def menor_fitness(pop, objetivo=27):
-    avaliacao = [(objetivo - fitness(i), i) for i in pop]
-    melhor_fitness = fitness(avaliacao[0][1])
-    return melhor_fitness
+def media_fitness(pop):
+    return media([fitness(p) for p in pop])
 
+def selecao(pop, funcao, prob_mutacao, N):
+    return [funcao(pop) for i in range(N) if prob_mutacao > random()]
 
-def teste_base(func_evolucao):
-    dados_execucao = dict(numero_sucessos=0, maior_fitness=0, menor_fitness=0, fitness_medio=0, desvio_padrao=[])
-    max_geracoes = 50
-    execucoes = 100
-    for i in range(execucoes):
-        evolucao_melhor_fitness = []
-        evolucao_fitness_medio = []
-        perda_variedade_genetica = []
-        p = populacao(30)
-        geracoes = 0
-        while geracoes<max_geracoes:
-            incremento_taxa_mutacao = len(set(evolucao_melhor_fitness))*0.0
-            p = func_evolucao(p, incremento_taxa_mutacao)
-            geracoes += 1
-            dados_execucao['desvio_padrao'].extend([fitness(j) for j in p])
-            if dados_execucao['fitness_medio'] == 0:
-                dados_execucao['fitness_medio'] = fitness_medio_populacao(p)
-                dados_execucao['menor_fitness'] = melhor_fitness(p)
-            else:
-                dados_execucao['fitness_medio'] = media([dados_execucao['fitness_medio'], fitness_medio_populacao(p)])
-                dados_execucao['menor_fitness'] = min([dados_execucao['menor_fitness'], menor_fitness(p)])
-            evolucao_melhor_fitness.append(melhor_fitness(p))
-            evolucao_fitness_medio.append(fitness_medio_populacao(p))
-            perda_variedade_genetica.append(len(set([tuple(j) for j in p])))
+def substituicao_elitista(pop, filhos, N):
+    pop.extend(filhos)
+    proxima_geracao = sorted([(fitness(f),f) for f in pop], reverse=True)[:N]
+    pop = [p[1] for p in proxima_geracao]
+    return pop 
 
-        #print melhor_fitness(p)
-        #plt.plot(range(len(evolucao_melhor_fitness)), evolucao_melhor_fitness, 'g')
-        #plt.plot(range(len(evolucao_fitness_medio)), evolucao_fitness_medio, 'b')
-        #plt.plot(range(len(perda_variedade_genetica)), perda_variedade_genetica, 'r')
-        #plt.title(u'Evolução do melhor fitness e do fitness medio da população')
-        ##import pdb;pdb.set_trace()
-        #plt.show()
+def substituicao_nao_elitista(pop, filhos, N):
+    pop.extend(filhos)
+    shuffle(pop)
+    return pop[:N]
 
-        dados_execucao['numero_sucessos'] += int(melhor_fitness(p) == 27)
-        dados_execucao['maior_fitness'] = max(dados_execucao['maior_fitness'], melhor_fitness(p))
-    dados_execucao['desvio_padrao'] = np.std(dados_execucao['desvio_padrao'])
-    dados_execucao['execucoes'] = i+1
-    return dados_execucao
+def evolucao(N = 30,prob_cruzamento = 0.8,
+                   prob_mutacao = 0.025,
+                   num_geracoes = 50,
+                   funcao_selecao=selecao_roleta,
+                   cruzamento=cruzamento_uniforme,
+                   mutacao=mutacao_escolha_aleatoria_do_bit,
+                   substituicao=substituicao_nao_elitista, **kwargs):
+    mf = []
+    pop = populacao(N)
+    for g in range(num_geracoes):
+        pais = selecao(pop, funcao_selecao, prob_cruzamento, N)
+        filhos = cruzamento(pais) if pais else []
+        filhos = mutacao(filhos, prob_mutacao) if filhos else []
+        pop = substituicao(pop, filhos, N) if filhos else pop
+        fpop = map(fitness, pop)
+        b, w, a, s = max(fpop), min(fpop), media(fpop), desvio_padrao(fpop)
+        mf.append(b)
+        #print '[{}] Melhor/Pior/Media/Std: {}/{}/{}/{}'.format(str(g).rjust(2, '0'), b, w, a, s)
+    b, w, a, s = max(mf), min(mf), media(mf), desvio_padrao(mf)
+    #print 'Fim da execução. Melhor/Pior/Media/Std: {}/{}/{}/{}'.format(b, w, a, s)
+    return b,w,a,s
 
-def primeiro_teste():
-    func_evolucao = lambda populacao, incremento_taxa_mutacao: evolucao(populacao, fitness, 27, selecao=selecao_roleta,
-            retencao=0.8, taxa_mutacao=0.025+incremento_taxa_mutacao, cruzamento=cruzamento_ponto_corte_aleatorio)
-    dados_execucao = teste_base(func_evolucao)
-    print('\n'.join([chave+': '+str(dados_execucao[chave]) for chave in dados_execucao.keys()]))
-    return dados_execucao
+def primeiro_teste(N = 30,prob_cruzamento = 0.8,
+                   prob_mutacao = 0.025,
+                   num_geracoes = 50,
+                   funcao_selecao=selecao_roleta,
+                   cruzamento=cruzamento_ponto_corte_aleatorio,
+                   mutacao=mutacao_escolha_aleatoria_do_bit,
+                   substituicao=substituicao_nao_elitista):
+    melhores_aleatorio = []
+    melhores_uniforme = []
+    for e in range(50):
+        cruzamento = cruzamento_ponto_corte_aleatorio
+        melhores_aleatorio.append(evolucao(**locals())[0])
+        cruzamento = cruzamento_uniforme 
+        melhores_uniforme.append(evolucao(**locals())[0])
+    mu = media(melhores_uniforme)
+    ma = media(melhores_aleatorio)
+    print 'Uniforme ({}) > Aleatorio ({})'.format(mu, ma) if mu > ma else 'Aleatorio ({}) > Uniforme ({})'.format(ma, mu)
+
+def segundo_teste(N = 30,prob_cruzamento = 0.8,
+                  prob_mutacao = 0.025,
+                  num_geracoes = 50,
+                  funcao_selecao=selecao_roleta,
+                  cruzamento=cruzamento_uniforme,
+                  mutacao=mutacao_bit_a_bit,
+                  substituicao=substituicao_nao_elitista):
+    melhores_roleta = []
+    melhores_torneio = []
+    for e in range(50):
+        funcao_selecao = selecao_roleta
+        melhores_roleta.append(evolucao(**locals())[0])
+        funcao_selecao = selecao_torneio
+        melhores_torneio.append(evolucao(**locals())[0])
+    mr = media(melhores_roleta)
+    mt = media(melhores_torneio)
+    print 'Torneio ({}) > Roleta ({})'.format(mt, mr) if mt > mr else 'Roleta ({}) > Torneio ({})'.format(mr, mt)
+
+def terceiro_teste(N = 30,prob_cruzamento = 0.8,
+                   prob_mutacao = 0.025,
+                   num_geracoes = 50,
+                   funcao_selecao=selecao_roleta,
+                   cruzamento=cruzamento_uniforme,
+                   mutacao=mutacao_bit_a_bit,
+                   substituicao=substituicao_nao_elitista):
+    melhores_bab = []
+    melhores_aleatorio = []
+    for e in range(50):
+        mutacao = mutacao_bit_a_bit
+        melhores_bab.append(evolucao(**locals())[0])
+        mutacao = mutacao_escolha_aleatoria_do_bit
+        melhores_aleatorio.append(evolucao(**locals())[0])
+    mb = media(melhores_bab)
+    ma = media(melhores_aleatorio)
+    print 'Bit-a-bit ({}) > Aleatorio ({})'.format(mb, ma) if mb > ma else 'Aleatorio ({}) > Bit-a-bit ({})'.format(ma, mb)
+    return evolucao(**locals())
+
+def quarto_teste(N = 30,prob_cruzamento = 0.8,
+                 prob_mutacao = 0.025,
+                 num_geracoes = 50,
+                 funcao_selecao=selecao_roleta,
+                 cruzamento=cruzamento_uniforme,
+                 mutacao=mutacao_bit_a_bit,
+                 substituicao=substituicao_nao_elitista):
+    melhores02, melhores05, melhores08 = [], [], []
+    for e in range(50):
+        prob_cruzamento = 0.2
+        melhores02.append(evolucao(**locals())[0])
+        prob_cruzamento = 0.5
+        melhores05.append(evolucao(**locals())[0])
+        prob_cruzamento = 0.8
+        melhores08.append(evolucao(**locals())[0])
+    m2 = media(melhores02)
+    m5 = media(melhores05)
+    m8 = media(melhores08)
+    print '0.2, 0.5, 0.8: {}, {}, {}'.format(m2,m5,m8)
+    return evolucao(**locals())
+
+def quinto_teste(N = 30,prob_cruzamento = 0.8,
+                 prob_mutacao = 0.025,
+                 num_geracoes = 50,
+                 funcao_selecao=selecao_roleta,
+                 cruzamento=cruzamento_uniforme,
+                 mutacao=mutacao_bit_a_bit,
+                 substituicao=substituicao_nao_elitista):
+    melhores1, melhores2meio, melhores5, melhores10, melhores25, melhores75 = [], [], [], [], [], []
+    for e in range(50):
+        prob_mutacao = 0.001
+        melhores1.append(evolucao(**locals())[0])
+        prob_mutacao = 0.025
+        melhores2meio.append(evolucao(**locals())[0])
+        prob_mutacao = 0.05
+        melhores5.append(evolucao(**locals())[0])
+        prob_mutacao = 0.1
+        melhores10.append(evolucao(**locals())[0])
+        prob_mutacao = 0.25
+        melhores25.append(evolucao(**locals())[0])
+        prob_mutacao = 0.75
+        melhores75.append(evolucao(**locals())[0])
+    medias = (media(melhores1), media(melhores2meio), media(melhores5), media(melhores10), media(melhores25), media(melhores75))
+    print '0.001, 0.025, 0.05, 0.1, 0.25, 0.75: {}, {}, {}, {}, {}, {}'.format(*medias)
+
+def sexto_teste(N = 30,prob_cruzamento = 0.8,
+                 prob_mutacao = 0.025,
+                 num_geracoes = 50,
+                 funcao_selecao=selecao_roleta,
+                 cruzamento=cruzamento_uniforme,
+                 mutacao=mutacao_bit_a_bit,
+                 substituicao=substituicao_elitista):
+    melhores_elitismo, melhores_random = [], []
+    for e in range(50):
+        substituicao = substituicao_elitista
+        melhores_elitismo.append(evolucao(**locals())[0])
+        substituicao = substituicao_nao_elitista
+        melhores_random.append(evolucao(**locals())[0])
+    print 'Elitismo: {}, Sem elitismo: {}'.format(media(melhores_elitismo), media(melhores_random))
+    return evolucao(**locals())
+
+def teste_num_geracoes(N = 30,prob_cruzamento = 0.8,
+                       prob_mutacao = 0.025,
+                       num_geracoes = 50,
+                       funcao_selecao=selecao_roleta,
+                       cruzamento=cruzamento_uniforme,
+                       mutacao=mutacao_bit_a_bit,
+                       substituicao=substituicao_elitista):
+    melhores_20, melhores_25, melhores_30, melhores_50= [], [], [], []
+    for e in range(50):
+        num_geracoes = 20
+        melhores_20.append(evolucao(**locals())[0])
+        num_geracoes = 25
+        melhores_25.append(evolucao(**locals())[0])
+        num_geracoes = 30
+        melhores_30.append(evolucao(**locals())[0])
+        num_geracoes = 50
+        melhores_50.append(evolucao(**locals())[0])
+    print '20: {}, 25: {}, 30: {}, 50: {}'.format(media(melhores_20), media(melhores_25), media(melhores_30), media(melhores_50))
+    return evolucao(**locals())
+
+def teste_num_individuos(N = 30,prob_cruzamento = 0.8,
+                       prob_mutacao = 0.025,
+                       num_geracoes = 30,
+                       funcao_selecao=selecao_roleta,
+                       cruzamento=cruzamento_uniforme,
+                       mutacao=mutacao_bit_a_bit,
+                       substituicao=substituicao_elitista):
+    melhores_10, melhores_20, melhores_25, melhores_30, melhores_50= [], [], [], [], []
+    for e in range(50):
+        N = 10
+        melhores_10.append(evolucao(**locals())[0])
+        N = 20
+        melhores_20.append(evolucao(**locals())[0])
+        N = 25
+        melhores_25.append(evolucao(**locals())[0])
+        N = 30
+        melhores_30.append(evolucao(**locals())[0])
+        N = 50
+        melhores_50.append(evolucao(**locals())[0])
+    print '10: {}, 20: {}, 25: {}, 30: {}, 50: {}'.format(media(melhores_10),media(melhores_20), media(melhores_25), media(melhores_30), media(melhores_50))
+    return evolucao(**locals())
+
 
 if __name__ == '__main__':
-    funcoes_teste = dict(primeiro_teste=primeiro_teste)
+    funcoes_teste = dict(primeiro_teste=primeiro_teste,
+                         segundo_teste=segundo_teste,
+                         terceiro_teste=terceiro_teste,
+                         quarto_teste=quarto_teste,
+                         quinto_teste=quinto_teste,
+                         sexto_teste=sexto_teste,
+                         teste_num_geracoes=teste_num_geracoes,
+                         teste_num_individuos=teste_num_individuos)
     if len(sys.argv) != 2:
         print("Uso: caixapreta.py [teste]")
         print("Em que teste pode ser uma dentre: {}".format(', '.join(funcoes_teste.keys())))
