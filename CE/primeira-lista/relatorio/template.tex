@@ -1,0 +1,190 @@
+\documentclass[11pt]{article}
+\usepackage{mathtools}
+\usepackage{epsfig,psfrag}
+\usepackage{calligra}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\selectlanguage{brazil}
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{{\vspace{-3cm}{\hspace{-4cm}\mbox{\begin{minipage}{1.5cm} \epsfxsize=2cm
+\centerline{\epsffile{unimontes.eps}}
+\end{minipage}}}{\hspace{.6cm} Computação evolutiva $\bullet$ 2015}}
+} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+
+
+
+%----------------------------------------------------------------------------------------
+%    TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{.5cm}\fontsize{24pt}{10pt}\selectfont\textbf{\sc Primeira lista de exercícios}} % Article title
+
+\author{
+\large
+\textsc{Herberth Amaral}\\[2mm]
+\normalsize Departamento de Ciência da Computação \\
+\normalsize Universidade Estadual de Montes Claros \\
+\normalsize \href{mailto:herberthamaral@gmail.com}{herberthamaral@gmail.com}
+\vspace{-5mm}
+}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+\section{Respostas}
+
+Os testes foram feitos utilizando o teste da soma de postos de Wilcoxon, em que
+a hipótese nula diz que as duas amostras foram tiradas da mesma distribuição e
+que a hipótese alternativa é que os valores de uma amostra tem uma maior chance
+de de serem maiores do que a outra amostra.
+
+Uma vez comprovada a hipótese alternativa com intervalo de confiança de 5\% (ou
+seja, p < 0.05), um teste simples de mediana determinará a melhor alternativa.
+
+Cada teste conta com dados de 60 execuções e para maior facilidade de
+reprodução, a semente geradora de números aleatórios foi inicializada com um
+valor fixo.
+
+\subsection{Primeiro teste}
+
+O primeiro teste mostra que o ponto de corte uniforme foi melhor
+estatisticamente (p=0.069), com mediana 21 contra 20. Os demais resultados do
+teste foram: Maior/Menor/Media/Desvio/Sucessos:
+25/17/20.63/1.67/0. Q1/Q2/Q3/ 19.0/21.0/22.0
+
+\subsection{Segundo teste}
+
+O segundo teste tem o intuito de descobrir o melhor operador de seleção: roleta ou torneio.
+
+Com resultado expressivamente melhor, a seleção por roleta se mostrou melhor
+(p=4.99e-20). Os demais dados do teste foram:
+Maior/Menor/Media/Desvio/Sucessos: 27/25/26.8/0.439696865276/49. Q1/Q2/Q3/
+27.0/27.0/27.0
+
+\subsection{Terceiro teste}
+
+O terceiro teste tem o intuito de avaliar os operadores de mutação: bit-a-bit ou escolha aleatória do bit.
+
+Por uma longa margem (7 pontos na mediana) o operdor bit-a-bit superou o operador de escolha aleatória (p=3.46e-21).
+
+Os demais resultados do teste foram: Maior/Menor/Media/Desvio/Sucessos: 27/26/26.9166666667/0.276385399196/55. Q1/Q2/Q3/ 27.0/27.0/27.0.
+
+É um número bem expressivo de sucessos considerando que ainda não há elitismo.
+
+\subsection{Quarto teste}
+
+O quarto teste tem o intuito de avaliar a probabilidade de cruzamento. Este
+teste é diferente dos demais porque não se trata de um teste pareado e sim de
+um teste com 4 amostras diferentes. Por conta disso, os resultados serão
+apresentados de forma diferente: ao invés de uma, três comparações (20\% com
+50\%, 20\% com 80\% e 50\% com 80\%).
+
+Os resultados foram os seguintes: 50\% foi melhor que 20\% (p=1.69e-10), 80\%
+foi melhor que 20\% (p=5.87e-14) e 80\% foi melhor que 50\% por uma pequena
+margem (p=0.03).
+
+Os resultados com 80\% são os mesmos do terceiro teste.
+
+\subsection{Quinto teste}
+
+O quinto teste tem o intuito de averiguar o efeito da troca da probabilidade de
+mutação. São 5 opções de probabilidade de mutação, então 10 testes são
+necessários.
+
+O teste de Wilcoxon mostrou que há uma diferença pequena entre as duas melhores
+taxas - de 2.5\% e de 5\%  (p=0.01), mas a mediana das duas possui o mesmo
+valor (27).
+
+\subsection{Sexto teste}
+
+O sexto teste tem o intuito de avaliar as estratégias elitistas versus as não-elitistas.
+
+Supreendentemente, não houve diferenças significativas entre estratégias
+elitistas versus as não-elitistas (p=0.86). Provavelmente, a boa escolha dos
+demais operadores fez com que as estratégias elitistas vs não elitistas não
+fizessem diferença.
+
+Para validar a hipótese feita no parágrafo anterior, trocou-se o operador de
+seleção (roleta para torneio) com o intuito de piorar o algoritmo e analisar as
+diferenças entre elistimo vs. não-elitismo.
+
+Desta vez os resultados penderam muito para o lado do elitismo (p=2.46e-21),
+com uma diferença de 3 pontos na mediana dos valores de fitness dos resultados.
+É importante notar que mesmo com uma configuração ruim de um operador, todas as
+execuções chegaram no mínimo global.
+
+\subsection{Avaliação final}
+
+Com base nos seis testes anteriores, a melhor configuração para o AG é:
+
+\begin{itemize}
+    \item \textbf{Cruzamento:} com ponto de corte uniforme;
+    \item \textbf{Seleção:} com roleta;
+    \item \textbf{Mutação:} bit-a-bit;
+    \item \textbf{Probabilidade de cruzamento:} 80\%;
+    \item \textbf{Probabilidade de mutação:} 5\% ou 2.5\%;
+\end{itemize}
+
+\subsubsection{Teste com números de gerações - 20, 25, 30, 50}
+
+Não houve diferenças significativas com a variação dos números de gerações
+utilizando as configurações ótimas. Portanto, podemos usar o menor número de
+gerações (25).
+
+Os testes mostram que a diferença passa a não ser significativa a partir de 20 gerações.
+
+\subsection{Conclusão}
+
+A melhor configuração para o AG segundo os testes realizados anteriormente, são:
+
+\begin{itemize}
+    \item \textbf{Cruzamento:} com ponto de corte uniforme;
+    \item \textbf{Seleção:} com roleta;
+    \item \textbf{Mutação:} bit-a-bit;
+    \item \textbf{Probabilidade de cruzamento:} 80\%;
+    \item \textbf{Probabilidade de mutação:} 5\% ou 2.5\%;
+    \item \textbf{Número de gerações:} a partir de 25;
+    \item \textbf{Número de indivíduos:} a partir de 20;
+\end{itemize}
+
+%Os scripts utilizados nesses testes encontram-se disponíveis em \url{
+
+\end{document}

@@ -4,7 +4,11 @@ Primeiro exercício de computação evolutiva.
 """
 import sys
 import math
+import numpy as np
+from scipy.stats import ranksums
 from random import randint, random, uniform, seed, shuffle
+
+seed(123456)
 
 def individuo():
     return [randint(0,1) for x in range(36)]
@@ -23,6 +27,8 @@ def fitness(individuo):
 media = lambda x: sum(x)/float(len(x))
 variancia = lambda x: sum([math.pow(xi - media(x), 2) for xi in x])/len(x)
 desvio_padrao = lambda x: math.sqrt(variancia(x))
+mediana = lambda x: sorted(x)[(len(x)/2)] if len(x)%2==1 else media(sorted(x)[len(x)/2-1:len(x)/2+1])
+pc = np.percentile
 
 def fitness_medio_populacao(populacao):
     return media([fitness(individuo) for individuo in populacao])
@@ -132,6 +138,25 @@ def evolucao(N = 30,prob_cruzamento = 0.8,
     #print 'Fim da execução. Melhor/Pior/Media/Std: {}/{}/{}/{}'.format(b, w, a, s)
     return b,w,a,s
 
+def stats_tests(a1, a2, a1label, a2label):
+    p = ranksums(a1, a2)[1]
+    if  p < 0.05:
+        ma1 = mediana(a1)
+        ma2 = mediana(a2)
+        if ma1 > ma2:
+            b, w, a, s = max(a1), min(a1), media(a1), desvio_padrao(a1)
+            q1, q2, q3 = pc(a1, 25), pc(a1, 50), pc(a1, 75)
+            sucessos = len([f for f in a1 if f == 27])
+        else:
+            b, w, a, s = max(a2), min(a2), media(a2), desvio_padrao(a2)
+            q1, q2, q3 = pc(a2, 25), pc(a2, 50), pc(a2, 75)
+            sucessos = len([f for f in a1 if f == 27])
+        print '{} ({}) > {} ({}) - p={}'.format(a1label, ma1, a2label, ma2, p) if ma1 > ma2 else '{} ({}) > {} ({}) - p={}'.format(a2label, ma2, a1label, ma1, p)
+        print 'Maior/Menor/Media/Desvio/Sucessos: {}/{}/{}/{}/{}'.format(b,w,a,s,sucessos)
+        print 'Q1/Q2/Q3/ {}/{}/{}'.format(q1, q2, q3)
+    else:
+        print u'Diferença não significativa estatisticamente (p={})'.format(p)
+
 def primeiro_teste(N = 30,prob_cruzamento = 0.8,
                    prob_mutacao = 0.025,
                    num_geracoes = 50,
@@ -141,14 +166,12 @@ def primeiro_teste(N = 30,prob_cruzamento = 0.8,
                    substituicao=substituicao_nao_elitista):
     melhores_aleatorio = []
     melhores_uniforme = []
-    for e in range(50):
+    for e in range(60):
         cruzamento = cruzamento_ponto_corte_aleatorio
         melhores_aleatorio.append(evolucao(**locals())[0])
         cruzamento = cruzamento_uniforme 
         melhores_uniforme.append(evolucao(**locals())[0])
-    mu = media(melhores_uniforme)
-    ma = media(melhores_aleatorio)
-    print 'Uniforme ({}) > Aleatorio ({})'.format(mu, ma) if mu > ma else 'Aleatorio ({}) > Uniforme ({})'.format(ma, mu)
+    stats_tests(melhores_uniforme, melhores_aleatorio, 'Uniforme', 'Aleatorio')
 
 def segundo_teste(N = 30,prob_cruzamento = 0.8,
                   prob_mutacao = 0.025,
@@ -159,14 +182,12 @@ def segundo_teste(N = 30,prob_cruzamento = 0.8,
                   substituicao=substituicao_nao_elitista):
     melhores_roleta = []
     melhores_torneio = []
-    for e in range(50):
+    for e in range(60):
         funcao_selecao = selecao_roleta
         melhores_roleta.append(evolucao(**locals())[0])
         funcao_selecao = selecao_torneio
         melhores_torneio.append(evolucao(**locals())[0])
-    mr = media(melhores_roleta)
-    mt = media(melhores_torneio)
-    print 'Torneio ({}) > Roleta ({})'.format(mt, mr) if mt > mr else 'Roleta ({}) > Torneio ({})'.format(mr, mt)
+    stats_tests(melhores_roleta, melhores_torneio, 'Roleta', 'Torneio')
 
 def terceiro_teste(N = 30,prob_cruzamento = 0.8,
                    prob_mutacao = 0.025,
@@ -177,15 +198,12 @@ def terceiro_teste(N = 30,prob_cruzamento = 0.8,
                    substituicao=substituicao_nao_elitista):
     melhores_bab = []
     melhores_aleatorio = []
-    for e in range(50):
+    for e in range(60):
         mutacao = mutacao_bit_a_bit
         melhores_bab.append(evolucao(**locals())[0])
         mutacao = mutacao_escolha_aleatoria_do_bit
         melhores_aleatorio.append(evolucao(**locals())[0])
-    mb = media(melhores_bab)
-    ma = media(melhores_aleatorio)
-    print 'Bit-a-bit ({}) > Aleatorio ({})'.format(mb, ma) if mb > ma else 'Aleatorio ({}) > Bit-a-bit ({})'.format(ma, mb)
-    return evolucao(**locals())
+    stats_tests(melhores_bab, melhores_aleatorio, 'Bit-a-bit', 'Aleatório')
 
 def quarto_teste(N = 30,prob_cruzamento = 0.8,
                  prob_mutacao = 0.025,
@@ -195,18 +213,16 @@ def quarto_teste(N = 30,prob_cruzamento = 0.8,
                  mutacao=mutacao_bit_a_bit,
                  substituicao=substituicao_nao_elitista):
     melhores02, melhores05, melhores08 = [], [], []
-    for e in range(50):
+    for e in range(60):
         prob_cruzamento = 0.2
         melhores02.append(evolucao(**locals())[0])
         prob_cruzamento = 0.5
         melhores05.append(evolucao(**locals())[0])
         prob_cruzamento = 0.8
         melhores08.append(evolucao(**locals())[0])
-    m2 = media(melhores02)
-    m5 = media(melhores05)
-    m8 = media(melhores08)
-    print '0.2, 0.5, 0.8: {}, {}, {}'.format(m2,m5,m8)
-    return evolucao(**locals())
+    stats_tests(melhores02, melhores05, '20%', '50%')
+    stats_tests(melhores02, melhores08, '20%', '80%')
+    stats_tests(melhores05, melhores08, '50%', '80%')
 
 def quinto_teste(N = 30,prob_cruzamento = 0.8,
                  prob_mutacao = 0.025,
@@ -216,7 +232,7 @@ def quinto_teste(N = 30,prob_cruzamento = 0.8,
                  mutacao=mutacao_bit_a_bit,
                  substituicao=substituicao_nao_elitista):
     melhores1, melhores2meio, melhores5, melhores10, melhores25, melhores75 = [], [], [], [], [], []
-    for e in range(50):
+    for e in range(60):
         prob_mutacao = 0.001
         melhores1.append(evolucao(**locals())[0])
         prob_mutacao = 0.025
@@ -229,8 +245,16 @@ def quinto_teste(N = 30,prob_cruzamento = 0.8,
         melhores25.append(evolucao(**locals())[0])
         prob_mutacao = 0.75
         melhores75.append(evolucao(**locals())[0])
-    medias = (media(melhores1), media(melhores2meio), media(melhores5), media(melhores10), media(melhores25), media(melhores75))
-    print '0.001, 0.025, 0.05, 0.1, 0.25, 0.75: {}, {}, {}, {}, {}, {}'.format(*medias)
+    stats_tests(melhores2meio, melhores5, '2.5%', '5%')
+    stats_tests(melhores2meio, melhores10, '2.5%', '10%')
+    stats_tests(melhores2meio, melhores25, '2.5%', '25%')
+    stats_tests(melhores2meio, melhores75, '2.5%', '75%')
+    stats_tests(melhores5, melhores10, '5%', '10%')
+    stats_tests(melhores5, melhores25, '5%', '25%')
+    stats_tests(melhores5, melhores75, '5%', '75%')
+    stats_tests(melhores10, melhores25, '10%', '25%')
+    stats_tests(melhores10, melhores75, '10%', '75%')
+    stats_tests(melhores25, melhores75, '25%', '75%')
 
 def sexto_teste(N = 30,prob_cruzamento = 0.8,
                  prob_mutacao = 0.025,
@@ -240,13 +264,27 @@ def sexto_teste(N = 30,prob_cruzamento = 0.8,
                  mutacao=mutacao_bit_a_bit,
                  substituicao=substituicao_elitista):
     melhores_elitismo, melhores_random = [], []
-    for e in range(50):
+    for e in range(60):
         substituicao = substituicao_elitista
         melhores_elitismo.append(evolucao(**locals())[0])
         substituicao = substituicao_nao_elitista
         melhores_random.append(evolucao(**locals())[0])
-    print 'Elitismo: {}, Sem elitismo: {}'.format(media(melhores_elitismo), media(melhores_random))
-    return evolucao(**locals())
+    stats_tests(melhores_elitismo, melhores_random, 'Elitismo', 'Aleatorio')
+
+def sexto_teste_torneio(N = 30,prob_cruzamento = 0.8,
+                 prob_mutacao = 0.025,
+                 num_geracoes = 50,
+                 funcao_selecao=selecao_torneio,
+                 cruzamento=cruzamento_uniforme,
+                 mutacao=mutacao_bit_a_bit,
+                 substituicao=substituicao_elitista): 
+    melhores_elitismo, melhores_random = [], []
+    for e in range(60):
+        substituicao = substituicao_elitista
+        melhores_elitismo.append(evolucao(**locals())[0])
+        substituicao = substituicao_nao_elitista
+        melhores_random.append(evolucao(**locals())[0])
+    stats_tests(melhores_elitismo, melhores_random, 'Elitismo (torneio)', 'Aleatorio (torneio)')
 
 def teste_num_geracoes(N = 30,prob_cruzamento = 0.8,
                        prob_mutacao = 0.025,
@@ -265,18 +303,22 @@ def teste_num_geracoes(N = 30,prob_cruzamento = 0.8,
         melhores_30.append(evolucao(**locals())[0])
         num_geracoes = 50
         melhores_50.append(evolucao(**locals())[0])
-    print '20: {}, 25: {}, 30: {}, 50: {}'.format(media(melhores_20), media(melhores_25), media(melhores_30), media(melhores_50))
-    return evolucao(**locals())
+    stats_tests(melhores_20, melhores_25, '20', '25')
+    stats_tests(melhores_20, melhores_30, '20', '30')
+    stats_tests(melhores_20, melhores_50, '20', '50')
+    stats_tests(melhores_25, melhores_30, '25', '30')
+    stats_tests(melhores_25, melhores_50, '25', '50')
+    stats_tests(melhores_30, melhores_50, '30', '50')
 
-def teste_num_individuos(N = 30,prob_cruzamento = 0.8,
+def teste_num_individuos(N=20,prob_cruzamento = 0.8,
                        prob_mutacao = 0.025,
-                       num_geracoes = 30,
+                       num_geracoes = 25,
                        funcao_selecao=selecao_roleta,
                        cruzamento=cruzamento_uniforme,
                        mutacao=mutacao_bit_a_bit,
                        substituicao=substituicao_elitista):
     melhores_10, melhores_20, melhores_25, melhores_30, melhores_50= [], [], [], [], []
-    for e in range(50):
+    for e in range(60):
         N = 10
         melhores_10.append(evolucao(**locals())[0])
         N = 20
@@ -287,8 +329,16 @@ def teste_num_individuos(N = 30,prob_cruzamento = 0.8,
         melhores_30.append(evolucao(**locals())[0])
         N = 50
         melhores_50.append(evolucao(**locals())[0])
-    print '10: {}, 20: {}, 25: {}, 30: {}, 50: {}'.format(media(melhores_10),media(melhores_20), media(melhores_25), media(melhores_30), media(melhores_50))
-    return evolucao(**locals())
+    stats_tests(melhores_10, melhores_20, '10', '20')
+    stats_tests(melhores_10, melhores_25, '10', '25')
+    stats_tests(melhores_10, melhores_30, '10', '30')
+    stats_tests(melhores_10, melhores_50, '10', '50')
+    stats_tests(melhores_20, melhores_25, '20', '25')
+    stats_tests(melhores_20, melhores_30, '20', '30')
+    stats_tests(melhores_20, melhores_50, '20', '50')
+    stats_tests(melhores_25, melhores_30, '25', '30')
+    stats_tests(melhores_25, melhores_50, '25', '50')
+    stats_tests(melhores_30, melhores_50, '30', '50')
 
 
 if __name__ == '__main__':
@@ -299,7 +349,8 @@ if __name__ == '__main__':
                          quinto_teste=quinto_teste,
                          sexto_teste=sexto_teste,
                          teste_num_geracoes=teste_num_geracoes,
-                         teste_num_individuos=teste_num_individuos)
+                         teste_num_individuos=teste_num_individuos,
+                         sexto_teste_torneio=sexto_teste_torneio)
     if len(sys.argv) != 2:
         print("Uso: caixapreta.py [teste]")
         print("Em que teste pode ser uma dentre: {}".format(', '.join(funcoes_teste.keys())))
