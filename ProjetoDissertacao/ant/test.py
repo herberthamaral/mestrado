@@ -18,9 +18,11 @@ def create_cities():
     phero = []
     for _from in range(MAX_CITIES):
         cities.append(dict(y=random(), x=random()))
+        dist.append([])
+        phero.append([])
         for to in range(MAX_CITIES):
-            dist[_from][to] = 0.0;
-            phero[_from][to] = INIT_PHER;
+            dist[_from].append(0.0);
+            phero[_from].append(INIT_PHER);
     return cities, dist, phero
 
 def compute_distance(cities, dist):
@@ -33,7 +35,7 @@ def compute_distance(cities, dist):
     return dist
 
 def init_population():
-    ants = [{'cur_city':0, 'tabu':{}, 'path':{}, 'path_index':1, 'path':[], 'next_city':-1, 'tour_length':0 } for a in range(MAX_ANTS)]
+    ants = [{'cur_city':0, 'tabu':[], 'path_index':1, 'path':[], 'next_city':-1, 'tour_length':0 } for a in range(MAX_ANTS)]
     to = 0
     for ant in range(MAX_ANTS):
         if to == MAX_CITIES:
@@ -41,10 +43,11 @@ def init_population():
         to += 1
         ants[ant]['cur_city'] = to
         for _from in range(MAX_CITIES):
-            ants[ant]['tabu']['from'] = 0
-            ants[ant]['path']['from'] = -1
+            ants[ant]['tabu'].append(0)
+            ants[ant]['path'].append(-1)
         ants[ant]['path'].append(ants[ant]['cur_city'])
-        ants[ant]['tabu'][ants[ant]['cur_city']] = 1
+        ants[ant]['tabu'].append(1)
+    return ants
 
 def restart_ants(ants, best=MAX_TOUR, best_index=0):
     to = 0
@@ -78,3 +81,55 @@ def select_next_city(ant, phero):
             to = 0
         if ants[ant]['tabu'][to] == 0:
             p = ant_product(_from, to, phero)/denom
+            if p > random():
+                break
+    return to
+
+def simulate_ants(ants, dist, moving=0):
+    moving += 1
+    for k in range(MAX_ANTS):
+        if ants[k]['path_index'] < MAX_CITIES:
+            if ants[k]['path_index'] == MAX_CITIES:
+                ants[k]['tour_length'] += dist[ants[k].path[MAX_CITIES - 1]][ants[k]]
+            ants[k]['cur_city'] = ants[k]['next_city']
+            moving += 1
+    return moving
+
+def update_trails(ants, phero):
+    for _from in range(MAX_CITIES):
+        for to in range(MAX_CITIES):
+            if _from != to:
+                phero[_from][to] *= (1.0 - RHO)
+                if phero[_from][to] < 0:
+                    phero[_from][to] = INIT_PHER
+
+    for ant in range(MAX_ANTS):
+        for i in range(MAX_CITIES):
+            if i < MAX_CITIES-1:
+                _from = ants[ant]['path'][i]
+                to = ants[ant]['path'][i+1]
+            else:
+                _from = ants[ant]['path'][i]
+                to = ants[ant]['path'][0]
+
+            phero[_from][to] += (QVAL/ants[ant]['tour_length'])
+            phero[to][_from] = phero[_from][to]
+
+    for _from in range(MAX_CITIES):
+        for to in range (MAX_CITIES):
+            phero[_from][to] *= RHO
+
+def main():
+    cur_time = 0
+    moving = 0
+    ants = init_population()
+    cities, dist, phero = create_cities()
+    while cur_time < MAX_TIME:
+        cur_time += 1
+        moving = simulate_ants(ants,dist,moving)
+        if moving == 0:
+            update_trails(ants, phero)
+            if cur_time != MAX_TIME:
+                restart_ants(ants)
+
+main()
