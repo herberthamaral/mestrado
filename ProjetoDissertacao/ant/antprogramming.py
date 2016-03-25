@@ -4,7 +4,6 @@ from collections import namedtuple
 
 """
 ToDo:
-    - Gerar dados de testes reduzidos (100 instancias)
     - Importar funções de fitness e interpretação de árvores
     - Cáculo de fitness de árvores incompletas: completar com elementos neutros (0 para add/sub, 1 para mul/div)
 """
