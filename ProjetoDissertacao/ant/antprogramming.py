@@ -1,6 +1,7 @@
 # encoding: utf-8
 import random
-from collections import namedtuple
+import jellyfish
+from collections import namedtuple, OrderedDict as od
 
 """
 ToDo:
@@ -16,6 +17,43 @@ operadores = {'+': lambda x,y: x+y,
               '/': lambda x,y: x/y}
 elementos_neutros = {'+': 0, '-':0, '*':1, '/':1}
 
+def load_dataset(filename='out.csv'):
+    content = [map(lambda x: unicode(x).strip(), linha.split(',')) for linha in open('out.csv', 'r').read().split('\n') if linha]
+    header = content[0]
+    content = content[1:]
+    comparacoes = []
+    for linha1 in content:
+        for linha2 in content:
+            if linha1 == linha2:
+                continue
+            comp = od(rec1=linha1[0].split('-')[1], rec2=linha2[0].split('-')[1])
+            for i, field in enumerate(header[1:]):
+                comp[field] = jellyfish.jaro_winkler(linha1[i+1], linha2[i+1])
+            comp['match'] = comp['rec1']==comp['rec2']
+            comparacoes.append(comp)
+    return header[1:], comparacoes
+
+variables, dataset = load_dataset()
+
+def custo(funcao): #o original eh fitness. custo = 1-fitness
+    resultado = dict(true_p=0, false_p=0, false_n=0)
+    for linha in dataset:
+        val = funcao(**linha)
+        if val > 0.95:
+            if linha['match']:
+                resultado['true_p'] += 1
+            else:
+                resultado['false_p'] += 1
+        else:
+            if linha['match']:
+                resultado['false_n'] += 1
+            else:
+                pass #verdadeiro-negativo -- n interessa p nos
+    precisao = float(resultado['true_p'])/(resultado['true_p']+resultado['false_p'])
+    recall = float(resultado['true_p'])/(resultado['true_p']+resultado['false_n'])
+    f1 = 2*(precisao*recall)/(precisao+recall)
+    return 1-f1
+
 class Tree(object):
     def __init__(self, op, left=None, right=None):
         self.op = op
@@ -23,6 +61,8 @@ class Tree(object):
         self.right = right
     
     def run(self, **kwargs):
+        if type(self.op) in (str, unicode) and self.op not in operadores.keys():
+            return kwargs[self.op]
         left, right = self.left, self.right
         if left is None:
             left = elementos_neutros[self.op]
@@ -42,7 +82,7 @@ class Tree(object):
     __call__ = run
 
 def inicializa_grafo():
-    vertices = numeros_reais + operadores.keys()
+    vertices = numeros_reais + operadores.keys() + variables
     grafo = dict()
     for v in vertices:
         grafo[v] = vertices
@@ -72,8 +112,8 @@ def obter_solucoes(formigas, feromonio, grafo, max_passos_formiga):
 
 def caminho_para_arvore(caminho, arvore=None):
     # [+, 1, -, 3] => [+, 1, [-, 3, 0]]
-    if not arvore:
-        arvore = Tree(caminho.pop(0)) if caminho[0] in operadores else caminho.pop(0)
+    if not arvore and caminho:
+        arvore = Tree(caminho.pop(0))
     if type(arvore) == Tree:
         if arvore.left is None:
             arvore.left = caminho_para_arvore(caminho, arvore.left)
@@ -97,5 +137,5 @@ def main():
         formigas, feromonio = obter_solucoes(formigas, feromonio, grafo)
         print melhor_formiga(formigas).caminho
 
-funcao = caminho_para_arvore(['+', '-', 1, 'z', '*', 3, 'v'])
-print funcao(v=4, z=0)
+funcao = caminho_para_arvore(['+', 'given_name', 'surname'])
+print custo(funcao)
