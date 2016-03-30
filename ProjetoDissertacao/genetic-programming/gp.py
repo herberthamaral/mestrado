@@ -59,7 +59,7 @@ def fitness(individuo):
     ftree = individuo['tree']
     global DATASET
     if not DATASET:
-        linhas = unicode(open('dataset.csv').read()).split('\n')
+        linhas = unicode(open('out.csv').read()).split('\n')
         header = [l.strip() for l in linhas[0].split(',')]
         DATASET = [dict(zip(header, [l.strip() for l in linha.strip().split(',')])) for linha in linhas[1:] if linha]
     #todas comparações com jaro-winkler
@@ -80,16 +80,16 @@ def fitness(individuo):
                 resultado = execute(ftree, evidencias)
             except Exception, e:
                 resultado = 0
-            if mesmo_registro(linha1, linha2):
-                if resultado <= 0.95:
-                    falso_negativo += 1
-                else:
+            if resultado >= 0.95:
+                if mesmo_registro(linha1, linha2):
                     verdadeiro_positivo += 1
-            else:
-                if resultado <= 0.95:
-                    verdadeiro_negativo += 1
                 else:
                     falso_positivo += 1
+            else:
+                if mesmo_registro(linha1, linha2):
+                    falso_negativo += 1
+                else:
+                    verdadeiro_negativo += 1
     try:
         precisao = verdadeiro_positivo/float(verdadeiro_positivo+falso_positivo)
         recall = verdadeiro_positivo/float(verdadeiro_positivo+falso_negativo)
@@ -245,7 +245,7 @@ def salva_resultado_arquivo(pop, geracao, ts):
 
 def pg(multi=True, qtd_populacao=60):
     attrs=['given_name','surname','street_number','address_1','address_2','suburb','postcode','state','date_of_birth','soc_sec_id']
-    for ex in range(30):
+    for ex in range(1):
         print u"Inicializando geração ",ex+1
         pop = init_pop(qtd_populacao, attrs, multi)
         for i in range(20):
@@ -262,6 +262,7 @@ def pg(multi=True, qtd_populacao=60):
             pop = [poda(p) for p in pop]
             print u'\nMelhor fitness da geração ',(i+1), pop[0]['fitness']
             print u'\nMelhor indivíduo:', pop[0]['tree']
+            print u'\nMelhor indivíduo (plain):', plain(pop[0]['tree'])
             salva_resultado_arquivo(pop, i, str(ex).rjust(2, '0'))
 
 if __name__=='__main__':
